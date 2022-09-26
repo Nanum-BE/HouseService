@@ -47,3 +47,15 @@ springdoc:
   cache:
     disabled: true
   packages-to-scan: com.nanum.houseservice
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIA6JUYLGWCXCTO5OO4
+      secretKey: 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
+    s3:
+      bucket: nanum-bucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
