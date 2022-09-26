@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 9001
 
 spring:
   application:
@@ -19,6 +19,9 @@ spring:
     url: jdbc:mysql://localhost:3306/house?serverTimezone=Asia/Seoul
     username: root
     password: 1234
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 eureka:
   instance:
@@ -28,3 +31,19 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+springdoc:
+  api-docs:
+    path: /api-docs/json
+    groups:
+      enabled: true
+  default-produces-media-type: application/json;charset=UTF-8
+  default-consumes-media-type: application/json;charset=UTF-8
+  version: v1.0.0
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha
+    path: /bus/v3/api-docs
+  cache:
+    disabled: true
+  packages-to-scan: com.nanum.houseservice
