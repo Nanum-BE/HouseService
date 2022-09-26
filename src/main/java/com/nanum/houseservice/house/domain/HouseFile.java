@@ -1,6 +1,6 @@
 package com.nanum.houseservice.house.domain;
 
-import com.nanum.houseservice.config.BaseTimeEntity;
+import com.nanum.config.BaseTimeEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.nanum.houseservice.config;
+package com.nanum.config;
 
 public enum MoveState {
     WAITING("대기"),

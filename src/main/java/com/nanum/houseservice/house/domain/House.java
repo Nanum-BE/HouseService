@@ -1,16 +1,18 @@
 package com.nanum.houseservice.house.domain;
 
-import com.nanum.houseservice.config.BaseTimeEntity;
-import com.nanum.houseservice.config.Gender;
-import com.nanum.houseservice.config.HouseStatus;
+import com.nanum.config.BaseTimeEntity;
+import com.nanum.config.Gender;
+import com.nanum.config.HouseStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class House extends BaseTimeEntity {
 
