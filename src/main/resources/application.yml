@@ -13,7 +13,7 @@ spring:
     show_sql: false
     database: mysql
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
