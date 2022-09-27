@@ -1,4 +1,7 @@
 package com.nanum.houseservice.house.infrastructure;
 
-public class HouseRepository {
+import com.nanum.houseservice.house.domain.House;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface HouseRepository extends JpaRepository<House, Long> {
 }

@@ -1,6 +1,8 @@
 package com.nanum.houseservice.house.domain;
 
-import com.nanum.houseservice.config.BaseTimeEntity;
+import com.nanum.config.BaseTimeEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +10,8 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class HouseFile extends BaseTimeEntity {
     @Id

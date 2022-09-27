@@ -1,8 +1,8 @@
 package com.nanum.houseservice.room.domain;
 
-import com.nanum.houseservice.config.BaseTimeEntity;
-import com.nanum.houseservice.config.Gender;
-import com.nanum.houseservice.config.MoveState;
+import com.nanum.config.BaseTimeEntity;
+import com.nanum.config.Gender;
+import com.nanum.config.MoveState;
 import com.nanum.houseservice.house.domain.House;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

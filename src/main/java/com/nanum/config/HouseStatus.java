@@ -1,4 +1,4 @@
-package com.nanum.houseservice.config;
+package com.nanum.config;
 
 public enum HouseStatus {
     BEFORE_APPROVAL("승인 전"),
