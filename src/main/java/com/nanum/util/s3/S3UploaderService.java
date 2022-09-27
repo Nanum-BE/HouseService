@@ -3,7 +3,6 @@ package com.nanum.util.s3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.nanum.util.s3.S3UploadDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,10 +29,18 @@ public class S3UploaderService {
         this.amazonS3Client = amazonS3Client;
     }
 
-    public S3UploadDto upload(MultipartFile multipartFile, String dirName) throws Exception {
-
+    public List<S3UploadDto> upload(List<MultipartFile> multipartFile, String dirName) throws Exception {
         try {
-            File uploadFile = convert(multipartFile);
+            List<File> uploadFile = new ArrayList<>();
+
+            multipartFile.forEach(m -> {
+                try {
+                    uploadFile.add(convert(m));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             return upload(uploadFile, bucket, dirName);
 
         } catch (Exception e) {
@@ -40,17 +49,27 @@ public class S3UploaderService {
     }
 
     // S3로 파일 업로드하기
-    private S3UploadDto upload(File uploadFile, String bucket, String dirName) {
-        String originName = uploadFile.getName();
-        String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName(); // S3에 저장된 파일 이름
-        String uploadImageUrl = putS3(uploadFile, bucket, fileName); // S3로 업로드
+    private List<S3UploadDto> upload(List<File> uploadFile, String bucket, String dirName) {
+        List<String> originName = new ArrayList<>();
+        List<String> fileName = new ArrayList<>();
+
+        uploadFile.forEach(u -> {
+            originName.add(u.getName());
+            fileName.add(dirName + "/" + UUID.randomUUID() + u.getName());
+        });
+
+        List<S3UploadDto> s3UploadDtoList = new ArrayList<>();
+        for(int i = 0; i < uploadFile.size(); i++) {
+            String imgUrl = putS3(uploadFile.get(i), bucket, fileName.get(i));
+            s3UploadDtoList.add(S3UploadDto.builder()
+                    .originName(originName.get(i))
+                    .saveName(fileName.get(i))
+                    .imgUrl(imgUrl)
+                    .build());
+        }
         removeNewFile(uploadFile);
 
-        return S3UploadDto.builder()
-                .originName(originName)
-                .saveName(fileName)
-                .imgUrl(uploadImageUrl)
-                .build();
+        return s3UploadDtoList;
     }
 
     private String putS3(File uploadFile, String bucket, String fileName) {
@@ -59,12 +78,13 @@ public class S3UploaderService {
     }
 
     // 로컬에 저장된 이미지 지우기
-    private void removeNewFile(File targetFile) {
-        if (targetFile.delete()) {
-            log.info("File delete success");
-            return;
+    private void removeNewFile(List<File> targetFile) {
+        for (File f : targetFile) {
+            if(!f.delete()) {
+                log.info("File delete fail -> " + f.getName());
+            }
         }
-        log.info("File delete fail");
+        log.info("Files delete success");
     }
 
     private File convert(MultipartFile multipartFile) throws Exception {

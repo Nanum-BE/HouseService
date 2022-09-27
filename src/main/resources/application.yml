@@ -14,14 +14,13 @@ spring:
     database: mysql
     hibernate:
       ddl-auto: create
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/house?serverTimezone=Asia/Seoul
-    username: root
-    password: 1234
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      maxFileSize: 50MB
+      maxRequestSize: 200MB
 
 eureka:
   instance:
@@ -30,7 +29,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://20.214.170.222:8761/eureka
 
 springdoc:
   api-docs:
@@ -48,14 +47,10 @@ springdoc:
     disabled: true
   packages-to-scan: com.nanum.houseservice
 
-cloud:
-  aws:
-    credentials:
-      accessKey: AKIA6JUYLGWCXCTO5OO4
-      secretKey: 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
-    s3:
-      bucket: nanum-bucket
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: false
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+

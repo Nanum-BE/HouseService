@@ -1,5 +1,6 @@
-package com.nanum.error;
+package com.nanum.exception;
 
+import com.nanum.config.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class ExceptionController {
     public ResponseEntity<Object> BadRequestException(final RuntimeException ex) {
         log.warn("400 error", ex);
 
-        BaseResponse<String> response = new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "잘못된 입력 값입니다.", ex.getMessage());
+        BaseResponse<String> response = new BaseResponse<>("잘못된 입력 값입니다.", ex.getMessage());
 
         return ResponseEntity.badRequest().body(response);
     }
@@ -30,7 +31,7 @@ public class ExceptionController {
         log.info(ex.getClass().getName());
         log.error("500 error", ex);
 
-        BaseResponse<String> response = new BaseResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 에러입니다.", ex.getMessage());
+        BaseResponse<String> response = new BaseResponse<>("서버 에러입니다.", ex.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

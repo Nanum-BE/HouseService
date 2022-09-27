@@ -3,16 +3,18 @@ package com.nanum.houseservice.house.domain;
 import com.nanum.config.BaseTimeEntity;
 import com.nanum.config.Gender;
 import com.nanum.config.HouseStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class House extends BaseTimeEntity {
 
@@ -59,9 +61,13 @@ public class House extends BaseTimeEntity {
     private Gender houseGender;
 
     private String mainHouseImgPath;
+    private String mainHouseImgOriginName;
+    private String mainHouseImgSaveName;
 
     @Comment("도면 이미지 경로")
     private String floorPlanPath;
+    private String floorPlanOriginName;
+    private String floorPlanSaveName;
 
     @Comment("검색 키워드")
     private String keyWord;

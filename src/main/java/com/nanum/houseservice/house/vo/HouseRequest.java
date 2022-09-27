@@ -13,10 +13,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class HouseRequest {
     @NotNull
-    @Schema(description = "호스트 식별자", defaultValue = "1")
-    private Long hostId;
-
-    @NotNull
     @Schema(description = "도로명 주소", defaultValue = "부산광역시 부산진구 엄광로 999")
     private String streetAddress;
 
