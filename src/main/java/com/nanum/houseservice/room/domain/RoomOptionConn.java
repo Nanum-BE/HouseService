@@ -1,5 +1,6 @@
 package com.nanum.houseservice.room.domain;
 
+import com.nanum.houseservice.option.domain.RoomOption;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

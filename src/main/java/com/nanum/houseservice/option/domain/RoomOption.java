@@ -1,4 +1,4 @@
-package com.nanum.houseservice.room.domain;
+package com.nanum.houseservice.option.domain;
 
 import com.nanum.config.BaseTimeEntity;
 import lombok.Getter;

@@ -2,11 +2,14 @@ package com.nanum.houseservice.house.vo;
 
 import com.nanum.config.Gender;
 import com.nanum.config.HouseStatus;
+import com.nanum.houseservice.option.vo.HouseOptionResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -55,5 +58,11 @@ public class HouseResponse {
 
     @Schema(description = "하우스 상태")
     private HouseStatus status;
+
+    @Schema(description = "하우스 이미지 반환 객체")
+    private List<HouseImgResponse> houseImgs;
+
+    @Schema(description = "하우스 옵션 연결 반환 객체")
+    private List<HouseOptionConnResponse> houseOptions;
 
 }

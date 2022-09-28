@@ -3,12 +3,12 @@ package com.nanum.util.s3;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.domain.HouseFile;
 import com.nanum.houseservice.house.domain.HouseImg;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class S3UploadDto {
 
@@ -25,12 +25,13 @@ public class S3UploadDto {
                 .build();
     }
 
-    public HouseImg houseImgToEntity(House house) {
+    public HouseImg houseImgToEntity(House house, int priority) {
         return HouseImg.builder()
                 .house(house)
                 .originName(originName)
                 .saveName(saveName)
                 .imgPath(imgUrl)
+                .priority(priority)
                 .build();
     }
 }

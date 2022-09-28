@@ -2,7 +2,7 @@ package com.nanum.houseservice.room.domain;
 
 import com.nanum.config.BaseTimeEntity;
 import com.nanum.config.Gender;
-import com.nanum.config.MoveState;
+import com.nanum.config.RoomStatus;
 import com.nanum.houseservice.house.domain.House;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,7 +58,9 @@ public class Room extends BaseTimeEntity {
     @Comment("계약 종료일")
     private LocalDateTime contractEndAt;
 
-    private MoveState moveState;
+    @Comment("방 상태 -> 대기 중, 진행 중, 입주 완료, 정비 중")
+    @Enumerated(EnumType.STRING)
+    private RoomStatus status;
 
     private String mainRoomImgPath;
 }

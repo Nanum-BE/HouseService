@@ -3,8 +3,11 @@ package com.nanum.houseservice.house.dto;
 import com.nanum.config.Gender;
 import com.nanum.config.HouseStatus;
 import com.nanum.houseservice.house.domain.House;
+
 import com.nanum.util.s3.S3UploadDto;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,6 +27,7 @@ public class HouseDto {
     private Gender houseGender;
     private String keyWord;
     private HouseStatus status;
+    private List<Long> houseOption;
 
     public House houseDtoToEntity(S3UploadDto mainImgUrl, S3UploadDto floorPlanImgUrl) {
         return House.builder()

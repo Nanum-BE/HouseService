@@ -1,6 +1,8 @@
 package com.nanum.houseservice.house.presentation;
 
 import com.nanum.config.BaseResponse;
+import com.nanum.exception.NoHouseFileException;
+import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.vo.HostHouseResponse;
@@ -41,15 +43,19 @@ public class HouseController {
     @PostMapping("/houses/{hostId}")
     public ResponseEntity<Object> createHouse(@PathVariable("hostId") Long hostId,
                                               @Valid @RequestPart HouseRequest houseRequest,
-                                              @RequestPart("houseMainImg") MultipartFile houseMainImg,
-                                              @RequestPart("floorPlanImg") MultipartFile floorPlanImg,
-                                              @RequestPart("houseFile") MultipartFile houseFile,
-                                              @RequestPart("houseImgs") List<MultipartFile> houseImgs) {
+                                              @RequestPart(value = "houseMainImg", required = false) MultipartFile houseMainImg,
+                                              @RequestPart(value = "floorPlanImg", required = false) MultipartFile floorPlanImg,
+                                              @RequestPart(value = "houseFile", required = false) MultipartFile houseFile,
+                                              @RequestPart(value = "houseImgs", required = false) List<MultipartFile> houseImgs) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
         houseDto.setHostId(hostId);
+
+        if(houseFile == null || houseFile.isEmpty()) {
+            throw new NoHouseFileException(String.format("HouseFile Cannot Be Empty"));
+        }
 
         houseService.createHouse(houseDto, houseMainImg, floorPlanImg, houseFile, houseImgs);
         String result = "하우스 등록 신청이 완료되었습니다.";
@@ -75,5 +81,4 @@ public class HouseController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
-
 }
