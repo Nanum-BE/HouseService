@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -192,24 +193,30 @@ public class HouseServiceImpl implements HouseService {
             originOptionConnId.add(h.getId());
         });
 
-        List<Long> houseOptions = houseDto.getHouseOption();
-
-        for(int i = 0; i < houseOptions.size(); i++) {
-            if (!originOptions.contains(houseOptions.get(i))) {
+        try {
+            if(houseDto.getHouseOption().size() < 1) {
                 houseOptionConnRepository.deleteAllById(originOptionConnId);
+            } else {
+                List<Long> houseOptions = houseDto.getHouseOption();
 
-                List<HouseOption> newHouseOptions = houseOptionRepository.findAllById(houseOptions);
-                List<HouseOptionConn> newHouseOptionConn = new ArrayList<>();
+                if(!new HashSet<>(houseOptions).containsAll(originOptions)) {
+                    houseOptionConnRepository.deleteAllById(originOptionConnId);
 
-                newHouseOptions.forEach(houseOption -> newHouseOptionConn.add(HouseOptionConn.builder()
-                        .house(house)
-                        .houseOption(houseOption)
-                        .build()));
+                    List<HouseOption> newHouseOptions = houseOptionRepository.findAllById(houseOptions);
+                    List<HouseOptionConn> newHouseOptionConn = new ArrayList<>();
 
-                houseOptionConnRepository.saveAll(newHouseOptionConn);
-                break;
+                    newHouseOptions.forEach(houseOption -> newHouseOptionConn.add(HouseOptionConn.builder()
+                            .house(house)
+                            .houseOption(houseOption)
+                            .build()));
+
+                    houseOptionConnRepository.saveAll(newHouseOptionConn);
+                }
             }
+        } catch (Exception e) {
+            log.info("기존 하우스 옵션 유지");
         }
+
     }
 
 }
