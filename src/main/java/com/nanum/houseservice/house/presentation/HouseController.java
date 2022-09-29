@@ -75,10 +75,31 @@ public class HouseController {
 
     @Operation(summary = "본인 하우스 상세 조회 API", description = "호스트가 본인 하우스 상세 정보를 조회하는 요청")
     @GetMapping("/houses/{hostId}/{houseId}")
-    public ResponseEntity<Object> retrieveHostHouse(@PathVariable("hostId") Long hostId, @PathVariable("houseId") Long houseId) {
+    public ResponseEntity<Object> retrieveHostHouse(@PathVariable("hostId") Long hostId,
+                                                    @PathVariable("houseId") Long houseId) {
 
         HouseResponse response = houseService.retrieveHostHouse(hostId, houseId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "하우스 수정 API", description = "호스트가 본인 하우스 정보를 수정하는 요청")
+    @PutMapping("/houses/{hostId}/{houseId}")
+    public ResponseEntity<Object> updateHouse(@PathVariable("hostId") Long hostId,
+                                              @PathVariable("houseId") Long houseId,
+                                              @Valid @RequestPart HouseRequest houseRequest,
+                                              @RequestPart(value = "houseMainImg", required = false) MultipartFile houseMainImg,
+                                              @RequestPart(value = "floorPlanImg", required = false) MultipartFile floorPlanImg) {
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
+        houseDto.setHostId(hostId);
+
+        houseService.updateHouse(houseId, houseDto, houseMainImg, floorPlanImg);
+        String result = "하우스 수정이 완료되었습니다.";
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
 }

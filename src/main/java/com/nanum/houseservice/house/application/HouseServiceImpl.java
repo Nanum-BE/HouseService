@@ -4,7 +4,6 @@ import com.nanum.config.HouseStatus;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.domain.HouseImg;
-import com.nanum.houseservice.house.dto.HouseOptionDto;
 import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
 import com.nanum.houseservice.house.vo.HouseOptionConnResponse;
 import com.nanum.houseservice.option.domain.HouseOption;
@@ -17,7 +16,6 @@ import com.nanum.houseservice.house.vo.HostHouseResponse;
 import com.nanum.houseservice.house.vo.HouseImgResponse;
 import com.nanum.houseservice.house.vo.HouseResponse;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
-import com.nanum.houseservice.option.vo.HouseOptionResponse;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +62,7 @@ public class HouseServiceImpl implements HouseService {
                 floorPlanImgDto = s3UploaderService.upload(List.of(floorPlanImg), "floorPlan").get(0);
             }
 
-            house = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto);
+            house = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, null);
             house = houseRepository.save(house);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -149,4 +147,69 @@ public class HouseServiceImpl implements HouseService {
 
         return houseResponse;
     }
+
+    @Override
+    public void updateHouse(Long houseId, HouseDto houseDto,
+                            MultipartFile houseMainImg, MultipartFile floorPlanImg) {
+
+        House house = houseRepository.findById(houseId).get();
+        houseDto.setStatus(house.getStatus());
+
+        S3UploadDto houseMainImgDto;
+        S3UploadDto floorPlanImgDto;
+
+        try {
+            if(houseMainImg != null && !houseMainImg.isEmpty()) {
+                houseMainImgDto = s3UploaderService.upload(List.of(houseMainImg), "houseMain").get(0);
+            } else {
+                houseMainImgDto = S3UploadDto.builder()
+                        .originName(house.getMainHouseImgOriginName())
+                        .saveName(house.getMainHouseImgSaveName())
+                        .imgUrl(house.getMainHouseImgPath())
+                        .build();
+            }
+            if(floorPlanImg != null && !floorPlanImg.isEmpty()) {
+                floorPlanImgDto = s3UploaderService.upload(List.of(floorPlanImg), "floorPlan").get(0);
+            } else {
+                floorPlanImgDto = S3UploadDto.builder()
+                        .originName(house.getFloorPlanOriginName())
+                        .saveName(house.getFloorPlanSaveName())
+                        .imgUrl(house.getFloorPlanPath())
+                        .build();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        House newHouse = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, houseId);
+        houseRepository.save(newHouse);
+
+        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseHouseId(houseId);
+        List<Long> originOptions = new ArrayList<>();
+        List<Long> originOptionConnId = new ArrayList<>();
+        houseOptionConns.forEach(h -> {
+            originOptions.add(h.getHouseOption().getHouseOptionId());
+            originOptionConnId.add(h.getHouseOptionConnId());
+        });
+
+        List<Long> houseOptions = houseDto.getHouseOption();
+
+        for(int i = 0; i < houseOptions.size(); i++) {
+            if (!originOptions.contains(houseOptions.get(i))) {
+                houseOptionConnRepository.deleteAllById(originOptionConnId);
+
+                List<HouseOption> newHouseOptions = houseOptionRepository.findAllById(houseOptions);
+                List<HouseOptionConn> newHouseOptionConn = new ArrayList<>();
+
+                newHouseOptions.forEach(houseOption -> newHouseOptionConn.add(HouseOptionConn.builder()
+                        .house(house)
+                        .houseOption(houseOption)
+                        .build()));
+
+                houseOptionConnRepository.saveAll(newHouseOptionConn);
+                break;
+            }
+        }
+    }
+
 }

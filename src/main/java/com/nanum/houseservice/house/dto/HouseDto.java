@@ -29,8 +29,9 @@ public class HouseDto {
     private HouseStatus status;
     private List<Long> houseOption;
 
-    public House houseDtoToEntity(S3UploadDto mainImgUrl, S3UploadDto floorPlanImgUrl) {
+    public House houseDtoToEntity(S3UploadDto mainImgUrl, S3UploadDto floorPlanImgUrl, Long houseId) {
         return House.builder()
+                .houseId(houseId)
                 .hostId(hostId)
                 .streetAddress(streetAddress)
                 .lotAddress(lotAddress)
