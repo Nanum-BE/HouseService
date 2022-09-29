@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLDeleteAll;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -18,7 +19,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "update house set delete_at=now() where id=?")
+@SQLDelete(sql = "update house set delete_at=now() where id=?                                                                                                                                                           ")
 @Where(clause = "delete_at is null")
 public class House extends BaseTimeEntity {
 

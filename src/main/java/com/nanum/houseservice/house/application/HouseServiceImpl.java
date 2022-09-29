@@ -4,6 +4,7 @@ import com.nanum.config.HouseStatus;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.domain.HouseImg;
+import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
 import com.nanum.houseservice.house.vo.HouseOptionConnResponse;
 import com.nanum.houseservice.option.domain.HouseOption;
@@ -138,23 +139,23 @@ public class HouseServiceImpl implements HouseService {
         List<HouseOptionConnResponse> houseOptionConnResponses = new ArrayList<>();
 
         houseOptionConns.forEach(h -> houseOptionConnResponses.add(HouseOptionConnResponse.builder()
-                        .houseOptionConnId(h.getHouseOption().getId())
+                        .id(h.getId())
                         .optionName(h.getHouseOption().getOptionName())
                         .iconPath(h.getHouseOption().getIconPath())
                 .build()));
 
         houseResponse.setHouseImgs(houseImgResponses);
-        houseResponse.setHouseOptions(houseOptionConnResponses);
+        houseResponse.setHouseOptionConn(houseOptionConnResponses);
 
         return houseResponse;
     }
 
     @Override
-    public void updateHouse(Long houseId, HouseDto houseDto,
+    public void updateHouse(Long houseId, HouseUpdateDto houseUpdateDto,
                             MultipartFile houseMainImg, MultipartFile floorPlanImg) {
 
         House house = houseRepository.findById(houseId).get();
-        houseDto.setStatus(house.getStatus());
+        houseUpdateDto.setStatus(house.getStatus());
 
         S3UploadDto houseMainImgDto;
         S3UploadDto floorPlanImgDto;
@@ -182,40 +183,32 @@ public class HouseServiceImpl implements HouseService {
             throw new RuntimeException(e);
         }
 
-        House newHouse = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, houseId);
+        House newHouse = houseUpdateDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, houseId);
         houseRepository.save(newHouse);
 
-        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
-        List<Long> originOptions = new ArrayList<>();
-        List<Long> originOptionConnId = new ArrayList<>();
-        houseOptionConns.forEach(h -> {
-            originOptions.add(h.getHouseOption().getId());
-            originOptionConnId.add(h.getId());
-        });
-
         try {
-            if(houseDto.getHouseOption().size() < 1) {
-                houseOptionConnRepository.deleteAllById(originOptionConnId);
-            } else {
-                List<Long> houseOptions = houseDto.getHouseOption();
-
-                if(!new HashSet<>(houseOptions).containsAll(originOptions)) {
-                    houseOptionConnRepository.deleteAllById(originOptionConnId);
-
-                    List<HouseOption> newHouseOptions = houseOptionRepository.findAllById(houseOptions);
-                    List<HouseOptionConn> newHouseOptionConn = new ArrayList<>();
-
-                    newHouseOptions.forEach(houseOption -> newHouseOptionConn.add(HouseOptionConn.builder()
+            if(houseUpdateDto.getDeleteHouseOption().size() > 0) {
+                List<Long> deleteHouseOptions = houseUpdateDto.getDeleteHouseOption();
+                houseOptionConnRepository.deleteAllById(deleteHouseOptions);
+            }
+            if(houseUpdateDto.getCreateHouseOption().size() > 0) {
+                for (Long houseOptionId : houseUpdateDto.getCreateHouseOption()) {
+                    HouseOption houseOption = houseOptionRepository.findById(houseOptionId).orElse(null);
+                    HouseOptionConn houseOptionConn = HouseOptionConn.builder()
                             .house(house)
                             .houseOption(houseOption)
-                            .build()));
-
-                    houseOptionConnRepository.saveAll(newHouseOptionConn);
+                            .build();
+                    houseOptionConnRepository.save(houseOptionConn);
                 }
             }
         } catch (Exception e) {
             log.info("기존 하우스 옵션 유지");
         }
+
+    }
+
+    @Override
+    public void updateHouseImg(Long hostId, Long houseId, List<MultipartFile> houseImgs) {
 
     }
 

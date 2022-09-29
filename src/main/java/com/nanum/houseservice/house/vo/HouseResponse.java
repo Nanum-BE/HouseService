@@ -63,6 +63,6 @@ public class HouseResponse {
     private List<HouseImgResponse> houseImgs;
 
     @Schema(description = "하우스 옵션 연결 반환 객체")
-    private List<HouseOptionConnResponse> houseOptions;
+    private List<HouseOptionConnResponse> houseOptionConn;
 
 }

@@ -4,9 +4,11 @@ import com.nanum.config.BaseResponse;
 import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.vo.HostHouseResponse;
 import com.nanum.houseservice.house.vo.HouseRequest;
 import com.nanum.houseservice.house.vo.HouseResponse;
+import com.nanum.houseservice.house.vo.HouseUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -86,27 +88,32 @@ public class HouseController {
     @PutMapping("/houses/{hostId}/{houseId}")
     public ResponseEntity<Object> updateHouse(@PathVariable("hostId") Long hostId,
                                               @PathVariable("houseId") Long houseId,
-                                              @Valid @RequestPart HouseRequest houseRequest,
+                                              @Valid @RequestPart HouseUpdateRequest houseUpdateRequest,
                                               @RequestPart(value = "houseMainImg", required = false) MultipartFile houseMainImg,
                                               @RequestPart(value = "floorPlanImg", required = false) MultipartFile floorPlanImg) {
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
-        houseDto.setHostId(hostId);
+        HouseUpdateDto houseUpdateDto = mapper.map(houseUpdateRequest, HouseUpdateDto.class);
+        houseUpdateDto.setHostId(hostId);
 
-        houseService.updateHouse(houseId, houseDto, houseMainImg, floorPlanImg);
+        houseService.updateHouse(houseId, houseUpdateDto, houseMainImg, floorPlanImg);
         String result = "하우스 수정이 완료되었습니다.";
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
 
-//    @Operation(summary = "사진 등록 API", description = "사진을 S3에 업로드하는 요청")
-//    @PostMapping("/s3/image")
-//    public ResponseEntity<Object> createImage(@RequestPart(value = "img", required = false) MultipartFile img) {
-//
-//
-//    }
+    @Operation(summary = "하우스 이미지 수정 API", description = "호스트가 본인 하우스 상세 이미지를 수정하는 요청")
+    @PutMapping("/houses/{hostId}/{houseId}/images")
+    public ResponseEntity<Object> updateHouseImg(@PathVariable("hostId") Long hostId,
+                                              @PathVariable("houseId") Long houseId,
+                                              @RequestPart(required = false) List<MultipartFile> houseImgs) {
+
+        houseService.updateHouseImg(hostId, houseId, houseImgs);
+        String result = "하우스 이미지 수정이 완료되었습니다.";
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
+    }
 
 }

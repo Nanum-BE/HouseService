@@ -11,7 +11,7 @@ import lombok.*;
 public class HouseOptionConnResponse {
 
     @Schema(description = "하우스 옵션 연결 식별자")
-    private Long houseOptionConnId;
+    private Long id;
 
     @Schema(description = "연결된 하우스 옵션 이름")
     private String optionName;
