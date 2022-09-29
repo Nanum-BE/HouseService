@@ -72,7 +72,7 @@ public class HouseServiceImpl implements HouseService {
         if(houseDto.getHouseOption() != null) {
             try {
                 for (Long houseOptionId : houseDto.getHouseOption()) {
-                    HouseOption houseOption = houseOptionRepository.findByHouseOptionId(houseOptionId);
+                    HouseOption houseOption = houseOptionRepository.findById(houseOptionId).orElse(null);
                     HouseOptionConn houseOptionConn = HouseOptionConn.builder()
                             .house(house)
                             .houseOption(houseOption)
@@ -126,8 +126,8 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public HouseResponse retrieveHostHouse(Long hostId, Long houseId) {
         House house = houseRepository.findById(houseId).get();
-        List<HouseImg> houseImgs = houseImgRepository.findAllByHouseHouseIdOrderByPriorityAsc(houseId);
-        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseHouseId(houseId);
+        List<HouseImg> houseImgs = houseImgRepository.findAllByHouseIdOrderByPriorityAsc(houseId);
+        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -137,7 +137,7 @@ public class HouseServiceImpl implements HouseService {
         List<HouseOptionConnResponse> houseOptionConnResponses = new ArrayList<>();
 
         houseOptionConns.forEach(h -> houseOptionConnResponses.add(HouseOptionConnResponse.builder()
-                        .houseOptionConnId(h.getHouseOption().getHouseOptionId())
+                        .houseOptionConnId(h.getHouseOption().getId())
                         .optionName(h.getHouseOption().getOptionName())
                         .iconPath(h.getHouseOption().getIconPath())
                 .build()));
@@ -184,12 +184,12 @@ public class HouseServiceImpl implements HouseService {
         House newHouse = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, houseId);
         houseRepository.save(newHouse);
 
-        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseHouseId(houseId);
+        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
         List<Long> originOptions = new ArrayList<>();
         List<Long> originOptionConnId = new ArrayList<>();
         houseOptionConns.forEach(h -> {
-            originOptions.add(h.getHouseOption().getHouseOptionId());
-            originOptionConnId.add(h.getHouseOptionConnId());
+            originOptions.add(h.getHouseOption().getId());
+            originOptionConnId.add(h.getId());
         });
 
         List<Long> houseOptions = houseDto.getHouseOption();

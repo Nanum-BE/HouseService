@@ -18,10 +18,10 @@ public class Room extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "houseId", nullable = false)
+    @JoinColumn(nullable = false)
     private House house;
 
     @Comment("방별 이용 가능한 성별 -> 남성, 여성, 공용")

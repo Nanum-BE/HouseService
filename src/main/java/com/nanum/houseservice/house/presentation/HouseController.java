@@ -2,7 +2,6 @@ package com.nanum.houseservice.house.presentation;
 
 import com.nanum.config.BaseResponse;
 import com.nanum.exception.NoHouseFileException;
-import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.vo.HostHouseResponse;
@@ -83,7 +82,7 @@ public class HouseController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
-    @Operation(summary = "하우스 수정 API", description = "호스트가 본인 하우스 정보를 수정하는 요청")
+    @Operation(summary = "하우스 수정 API", description = "호스트가 본인 하우스 정보 및 하우스 옵션을 수정하는 요청")
     @PutMapping("/houses/{hostId}/{houseId}")
     public ResponseEntity<Object> updateHouse(@PathVariable("hostId") Long hostId,
                                               @PathVariable("houseId") Long houseId,
@@ -102,4 +101,12 @@ public class HouseController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
+
+//    @Operation(summary = "사진 등록 API", description = "사진을 S3에 업로드하는 요청")
+//    @PostMapping("/s3/image")
+//    public ResponseEntity<Object> createImage(@RequestPart(value = "img", required = false) MultipartFile img) {
+//
+//
+//    }
+
 }

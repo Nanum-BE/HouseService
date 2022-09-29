@@ -16,10 +16,10 @@ import javax.persistence.*;
 public class HouseFile extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long houseFileId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "houseId", nullable = false)
+    @JoinColumn(nullable = false)
     private House house;
 
     @Column(nullable = false)

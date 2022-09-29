@@ -18,7 +18,7 @@ import java.util.List;
 public class HouseResponse {
 
     @Schema(description = "하우스 식별자")
-    private Long houseId;
+    private Long id;
 
     @Schema(description = "도로명 주소")
     private String streetAddress;

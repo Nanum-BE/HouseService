@@ -45,7 +45,7 @@ springdoc:
     path: /bus/v3/api-docs
   cache:
     disabled: true
-  packages-to-scan: com.nanum.houseservice
+  packages-to-scan: com.nanum
 
 logging:
   level:

@@ -31,7 +31,7 @@ public class HouseDto {
 
     public House houseDtoToEntity(S3UploadDto mainImgUrl, S3UploadDto floorPlanImgUrl, Long houseId) {
         return House.builder()
-                .houseId(houseId)
+                .id(houseId)
                 .hostId(hostId)
                 .streetAddress(streetAddress)
                 .lotAddress(lotAddress)

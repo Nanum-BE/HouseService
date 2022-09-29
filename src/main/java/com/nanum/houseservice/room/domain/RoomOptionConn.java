@@ -12,13 +12,13 @@ import javax.persistence.*;
 public class RoomOptionConn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomOptionConnId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roomId", nullable = false)
+    @JoinColumn(nullable = false)
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roomOptionId", nullable = false)
+    @JoinColumn(nullable = false)
     private RoomOption roomOption;
 }

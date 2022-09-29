@@ -16,13 +16,13 @@ import javax.persistence.*;
 public class HouseOptionConn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long houseOptionConnId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "houseId", nullable = false)
+    @JoinColumn(nullable = false)
     private House house;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "houseOptionId", nullable = false)
+    @JoinColumn(nullable = false)
     private HouseOption houseOption;
 }

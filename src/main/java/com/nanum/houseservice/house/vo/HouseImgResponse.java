@@ -11,7 +11,7 @@ import lombok.*;
 public class HouseImgResponse {
 
     @Schema(description = "하우스 이미지 식별자")
-    private Long houseImgId;
+    private Long id;
 
     @Schema(description = "하우스 이미지 경로")
     private String imgPath;
