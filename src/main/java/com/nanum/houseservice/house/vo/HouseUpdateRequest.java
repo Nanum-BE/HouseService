@@ -26,7 +26,7 @@ public class HouseUpdateRequest {
     private String zipCode;
 
     @NotNull(message = "explanation cannot be null")
-    @Schema(description = "하우스 소개", defaultValue = "신축 건물입니다~")
+    @Schema(description = "하우스 소개", defaultValue = "수정 테스트입니다.")
     private String explanation;
 
     @NotNull(message = "houseName cannot be null")
@@ -49,7 +49,7 @@ public class HouseUpdateRequest {
     @Schema(description = "하우스 성별", defaultValue = "MALE")
     private Gender houseGender;
 
-    @Schema(description = "검색 키워드", defaultValue = "#가야역#동의대역#동의대학교")
+    @Schema(description = "검색 키워드", defaultValue = "#수정")
     private String keyWord;
 
     @Schema(description = "삭제할 하우스 옵션")

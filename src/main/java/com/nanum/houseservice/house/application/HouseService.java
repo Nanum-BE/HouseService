@@ -16,5 +16,5 @@ public interface HouseService {
     List<HostHouseResponse> retrieveHostAllHouses(Long hostId);
     HouseResponse retrieveHostHouse(Long hostId, Long houseId);
     void updateHouse(Long houseId, HouseUpdateDto houseUpdateDto, MultipartFile houseMainImg, MultipartFile floorPlanImg);
-    void updateHouseImg(Long hostId, Long houseId, List<MultipartFile> houseImgs);
+    void updateHouseImg(Long hostId, Long houseId, List<Long> deleteHouseImgs, List<MultipartFile> houseImgs);
 }

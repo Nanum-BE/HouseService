@@ -108,9 +108,10 @@ public class HouseController {
     @PutMapping("/houses/{hostId}/{houseId}/images")
     public ResponseEntity<Object> updateHouseImg(@PathVariable("hostId") Long hostId,
                                               @PathVariable("houseId") Long houseId,
+                                              @RequestPart(required = false) List<Long> deleteHouseImgs,
                                               @RequestPart(required = false) List<MultipartFile> houseImgs) {
 
-        houseService.updateHouseImg(hostId, houseId, houseImgs);
+        houseService.updateHouseImg(hostId, houseId, deleteHouseImgs, houseImgs);
         String result = "하우스 이미지 수정이 완료되었습니다.";
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));

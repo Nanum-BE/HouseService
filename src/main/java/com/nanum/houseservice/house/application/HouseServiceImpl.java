@@ -28,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -208,8 +207,30 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public void updateHouseImg(Long hostId, Long houseId, List<MultipartFile> houseImgs) {
+    public void updateHouseImg(Long hostId, Long houseId, List<Long> deleteHouseImgs, List<MultipartFile> houseImgs) {
+        //TODO #1 : 삭제할 사진 리스트 Id들로 deleteAll하기
+        if(deleteHouseImgs != null && !deleteHouseImgs.isEmpty()) {
+            houseImgRepository.deleteAllById(deleteHouseImgs);
+        }
 
+        //TODO #2 : 추가할 사진리스트 S3에 업로드
+        List<S3UploadDto> houseImgsDto = new ArrayList<>();
+
+        try {
+            if(houseImgs != null && !houseImgs.isEmpty() && !houseImgs.get(0).isEmpty()) {
+                houseImgsDto = s3UploaderService.upload(houseImgs, "house");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //TODO #3 : S3에 업로드한 사진 리스트 DB에 저장
+//        List<HouseImg> imgList = new ArrayList<>();
+//        for(int i = 0; i < houseImgsDto.size(); i++) {
+//            imgList.add(houseImgsDto.get(i).houseImgToEntity(house, i+1));
+//        }
+//
+//        houseImgRepository.saveAll(imgList);
     }
 
 }
