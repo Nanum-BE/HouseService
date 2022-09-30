@@ -35,7 +35,4 @@ public class HouseImg extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String imgPath;
-
-    @Comment("우선 순위(정렬 기준)")
-    private int priority;
 }

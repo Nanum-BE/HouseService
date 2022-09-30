@@ -105,7 +105,7 @@ public class HouseController {
     }
 
     @Operation(summary = "하우스 이미지 수정 API", description = "호스트가 본인 하우스 상세 이미지를 수정하는 요청")
-    @PutMapping("/houses/{hostId}/{houseId}/images")
+    @PutMapping("/houses/{hostId}/{houseId}/image")
     public ResponseEntity<Object> updateHouseImg(@PathVariable("hostId") Long hostId,
                                               @PathVariable("houseId") Long houseId,
                                               @RequestPart(required = false) List<Long> deleteHouseImgs,

@@ -25,13 +25,12 @@ public class S3UploadDto {
                 .build();
     }
 
-    public HouseImg houseImgToEntity(House house, int priority) {
+    public HouseImg houseImgToEntity(House house) {
         return HouseImg.builder()
                 .house(house)
                 .originName(originName)
                 .saveName(saveName)
                 .imgPath(imgUrl)
-                .priority(priority)
                 .build();
     }
 }

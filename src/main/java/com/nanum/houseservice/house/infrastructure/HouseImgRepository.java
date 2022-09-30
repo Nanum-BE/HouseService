@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface HouseImgRepository extends JpaRepository<HouseImg, Long> {
-    List<HouseImg> findAllByHouseIdOrderByPriorityAsc(Long houseId);
+    List<HouseImg> findAllByHouseId(Long houseId);
 }
