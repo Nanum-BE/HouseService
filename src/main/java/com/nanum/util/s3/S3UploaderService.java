@@ -32,16 +32,18 @@ public class S3UploaderService {
     public List<S3UploadDto> upload(List<MultipartFile> multipartFile, String dirName) throws Exception {
         try {
             List<File> uploadFile = new ArrayList<>();
+            List<String> originName = new ArrayList<>();
 
             multipartFile.forEach(m -> {
                 try {
                     uploadFile.add(convert(m));
+                    originName.add(m.getOriginalFilename());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
 
-            return upload(uploadFile, bucket, dirName);
+            return upload(uploadFile, bucket, dirName, originName);
 
         } catch (Exception e) {
             throw new Exception();
@@ -49,21 +51,14 @@ public class S3UploaderService {
     }
 
     // S3로 파일 업로드하기
-    private List<S3UploadDto> upload(List<File> uploadFile, String bucket, String dirName) {
-        List<String> originName = new ArrayList<>();
-        List<String> fileName = new ArrayList<>();
-
-        uploadFile.forEach(u -> {
-            originName.add(u.getName());
-            fileName.add(dirName + "/" + UUID.randomUUID() + u.getName());
-        });
+    private List<S3UploadDto> upload(List<File> uploadFile, String bucket, String dirName, List<String> originName) {
 
         List<S3UploadDto> s3UploadDtoList = new ArrayList<>();
         for(int i = 0; i < uploadFile.size(); i++) {
-            String imgUrl = putS3(uploadFile.get(i), bucket, fileName.get(i));
+            String imgUrl = putS3(uploadFile.get(i), bucket, dirName + "/" + uploadFile.get(i).getName());
             s3UploadDtoList.add(S3UploadDto.builder()
                     .originName(originName.get(i))
-                    .saveName(fileName.get(i))
+                    .saveName(dirName + "/" + uploadFile.get(i).getName())
                     .imgUrl(imgUrl)
                     .build());
         }
@@ -81,10 +76,10 @@ public class S3UploaderService {
     private void removeNewFile(List<File> targetFile) {
         for (File f : targetFile) {
             if(!f.delete()) {
-                log.info("File delete fail -> " + f.getName());
+                log.info("Local File delete failed -> " + f.getName());
             }
         }
-        log.info("Files delete success");
+        //log.info("Files delete success");
     }
 
     private File convert(MultipartFile multipartFile) throws Exception {
