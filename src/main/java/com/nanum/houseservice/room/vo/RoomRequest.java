@@ -20,10 +20,6 @@ public class RoomRequest {
     @Schema(description = "호스트 식별자", defaultValue = "1")
     private Long hostId;
 
-    @NotNull(message = "houseId cannot be null")
-    @Schema(description = "하우스 식별자", defaultValue = "1")
-    private Long houseId;
-
     @NotNull(message = "roomGender cannot be null")
     @Schema(description = "방 성별", defaultValue = "COMMON")
     private Gender roomGender;

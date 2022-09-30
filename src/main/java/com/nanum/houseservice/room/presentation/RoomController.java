@@ -1,10 +1,10 @@
 package com.nanum.houseservice.room.presentation;
 
 import com.nanum.config.BaseResponse;
-import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.room.application.RoomService;
 import com.nanum.houseservice.room.dto.RoomDto;
 import com.nanum.houseservice.room.vo.RoomRequest;
+import com.nanum.houseservice.room.vo.RoomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,7 +23,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Tag(name = "방", description = "방 관련 api")
 @ApiResponses(value = {
@@ -37,14 +37,16 @@ public class RoomController {
     private final RoomService roomService;
 
     @Operation(summary = "방 등록 API", description = "호스트가 하우스의 방을 등록하는 요청")
-    @PostMapping("/v1/rooms")
+    @PostMapping("/houses/{houseId}/rooms")
     public ResponseEntity<Object> createRoom(@Valid @RequestPart RoomRequest roomRequest,
+                                             @PathVariable Long houseId,
                                              @RequestPart(value = "roomMainImg", required = false) MultipartFile roomMainImg,
                                              @RequestPart(value = "roomImgs", required = false) List<MultipartFile> roomImgs) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         RoomDto roomDto = mapper.map(roomRequest, RoomDto.class);
+        roomDto.setHouseId(houseId);
 
         roomService.createRoom(roomDto, roomMainImg, roomImgs);
         String result = "방 등록이 완료되었습니다.";
@@ -53,8 +55,13 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //TODO #2: 방 목록 조회 API
+    @Operation(summary = "방 목록 조회 API", description = "호스트가 하우스의 방 목록을 조회하는 요청")
+    @GetMapping("/houses/{houseId}/rooms")
+    public ResponseEntity<Object> retrieveHostAllRooms(@PathVariable Long houseId) {
+        List<RoomResponse> response = roomService.retrieveHostAllRooms(houseId);
 
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
 
     //TODO #3: 방 상세 조회 API
 
