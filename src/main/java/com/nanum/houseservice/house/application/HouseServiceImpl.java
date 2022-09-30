@@ -3,19 +3,17 @@ package com.nanum.houseservice.house.application;
 import com.nanum.config.HouseStatus;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
+import com.nanum.houseservice.house.domain.HouseFile;
 import com.nanum.houseservice.house.domain.HouseImg;
 import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
-import com.nanum.houseservice.house.vo.HouseOptionConnResponse;
+import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.house.domain.HouseOptionConn;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.infrastructure.HouseFileRepository;
 import com.nanum.houseservice.house.infrastructure.HouseImgRepository;
 import com.nanum.houseservice.house.infrastructure.HouseRepository;
-import com.nanum.houseservice.house.vo.HostHouseResponse;
-import com.nanum.houseservice.house.vo.HouseImgResponse;
-import com.nanum.houseservice.house.vo.HouseResponse;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
@@ -85,8 +83,8 @@ public class HouseServiceImpl implements HouseService {
             }
         }
 
-        /** 1. 하우스 상세 사진(리스트)을 S3에 저장
-            2. 하우스 상세 사진 정보 + 우선순위를 house_img 테이블에 Insert **/
+        /** 1. 하우스 서류, 하우스 상세 사진(리스트)을 S3에 저장
+            2. 하우스 서류, 하우스 상세 사진 정보를 house_img 테이블에 Insert **/
         try {
             if(houseFile != null && !houseFile.isEmpty()) {
                 S3UploadDto houseFileDto = s3UploaderService.upload(List.of(houseFile), "houseFile").get(0);
@@ -99,8 +97,8 @@ public class HouseServiceImpl implements HouseService {
             }
 
             List<HouseImg> imgList = new ArrayList<>();
-            for(int i = 0; i < houseImgsDto.size(); i++) {
-                imgList.add(houseImgsDto.get(i).houseImgToEntity(house));
+            for (S3UploadDto s3UploadDto : houseImgsDto) {
+                imgList.add(s3UploadDto.houseImgToEntity(house));
             }
 
             houseImgRepository.saveAll(imgList);
@@ -222,7 +220,6 @@ public class HouseServiceImpl implements HouseService {
             throw new RuntimeException(e);
         }
 
-        //TODO #3 : S3에 업로드한 사진 리스트 DB에 저장
         House house = houseRepository.findById(houseId).get();
         List<HouseImg> imgList = new ArrayList<>();
 
@@ -231,6 +228,36 @@ public class HouseServiceImpl implements HouseService {
         }
 
         houseImgRepository.saveAll(imgList);
+    }
+
+    @Override
+    public void updateHouseFile(Long hostId, Long houseId, MultipartFile houseFile) {
+        House house = houseRepository.findById(houseId).get();
+        HouseFile originHouseFile = houseFileRepository.findById(houseId).get();
+        houseFileRepository.delete(originHouseFile);
+
+        try {
+            if(houseFile != null && !houseFile.isEmpty()) {
+                S3UploadDto houseFileDto = s3UploaderService.upload(List.of(houseFile), "houseFile").get(0);
+                houseFileRepository.save(houseFileDto.houseFileToEntity(house));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public HouseFileResponse retrieveHouseFile(Long hostId, Long houseId) {
+        HouseFile houseFile = houseFileRepository.findByHouseId(houseId);
+
+        if(houseFile == null) {
+            throw new NotFoundException(String.format("No Lookup Value"));
+        }
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        return mapper.map(houseFile, HouseFileResponse.class);
     }
 
 }

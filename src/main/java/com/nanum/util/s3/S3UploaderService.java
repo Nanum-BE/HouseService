@@ -76,10 +76,10 @@ public class S3UploaderService {
     private void removeNewFile(List<File> targetFile) {
         for (File f : targetFile) {
             if(!f.delete()) {
-                log.info("File delete fail -> " + f.getName());
+                log.info("Local File delete failed -> " + f.getName());
             }
         }
-        log.info("Files delete success");
+        //log.info("Files delete success");
     }
 
     private File convert(MultipartFile multipartFile) throws Exception {

@@ -5,10 +5,7 @@ import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.dto.HouseUpdateDto;
-import com.nanum.houseservice.house.vo.HostHouseResponse;
-import com.nanum.houseservice.house.vo.HouseRequest;
-import com.nanum.houseservice.house.vo.HouseResponse;
-import com.nanum.houseservice.house.vo.HouseUpdateRequest;
+import com.nanum.houseservice.house.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -115,6 +112,32 @@ public class HouseController {
         String result = "하우스 이미지 수정이 완료되었습니다.";
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
+    }
+
+    @Operation(summary = "하우스 서류 수정 API", description = "호스트가 본인 하우스 서류를 수정하는 요청")
+    @PutMapping("/houses/{hostId}/{houseId}/file")
+    public ResponseEntity<Object> updateHouseFile(@PathVariable("hostId") Long hostId,
+                                                 @PathVariable("houseId") Long houseId,
+                                                 @RequestPart(required = false) MultipartFile houseFile) {
+
+        if(houseFile == null || houseFile.isEmpty()) {
+            throw new NoHouseFileException(String.format("HouseFile Cannot Be Empty"));
+        }
+
+        houseService.updateHouseFile(hostId, houseId, houseFile);
+        String result = "하우스 이미지 수정이 완료되었습니다.";
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
+    }
+
+    @Operation(summary = "하우스 서류 조회 API", description = "하우스 서류를 조회하는 요청")
+    @GetMapping("/houses/{hostId}/{houseId}/file")
+    public ResponseEntity<Object> retrieveHouseFile(@PathVariable Long hostId,
+                                                    @PathVariable Long houseId) {
+
+        HouseFileResponse response = houseService.retrieveHouseFile(hostId, houseId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
 }
