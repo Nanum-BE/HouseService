@@ -1,15 +1,24 @@
 package com.nanum.houseservice.room.domain;
 
+import com.nanum.config.BaseTimeEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class RoomImg {
+@AllArgsConstructor
+@Builder
+@SQLDelete(sql = "update room_img set delete_at=now() where id=?                                                                                                                                                           ")
+@Where(clause = "delete_at is null")
+public class RoomImg extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +32,5 @@ public class RoomImg {
 
     private String saveName;
 
-    private String houseImgPath;
-
-    @Comment("우선 순위(정렬 기준)")
-    private int priority;
+    private String imgPath;
 }

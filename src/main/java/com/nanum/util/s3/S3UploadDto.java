@@ -3,6 +3,8 @@ package com.nanum.util.s3;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.domain.HouseFile;
 import com.nanum.houseservice.house.domain.HouseImg;
+import com.nanum.houseservice.room.domain.Room;
+import com.nanum.houseservice.room.domain.RoomImg;
 import lombok.*;
 
 @Getter
@@ -33,4 +35,14 @@ public class S3UploadDto {
                 .imgPath(imgUrl)
                 .build();
     }
+
+    public RoomImg roomImgToEntity(Room room) {
+        return RoomImg.builder()
+                .room(room)
+                .originName(originName)
+                .saveName(saveName)
+                .imgPath(imgUrl)
+                .build();
+    }
+
 }
