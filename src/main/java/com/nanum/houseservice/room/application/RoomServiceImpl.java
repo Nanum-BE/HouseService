@@ -3,7 +3,12 @@ package com.nanum.houseservice.room.application;
 import com.nanum.config.RoomStatus;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
+import com.nanum.houseservice.house.domain.HouseImg;
+import com.nanum.houseservice.house.domain.HouseOptionConn;
 import com.nanum.houseservice.house.infrastructure.HouseRepository;
+import com.nanum.houseservice.house.vo.HouseImgResponse;
+import com.nanum.houseservice.house.vo.HouseOptionConnResponse;
+import com.nanum.houseservice.house.vo.HouseResponse;
 import com.nanum.houseservice.option.domain.RoomOption;
 import com.nanum.houseservice.option.infrastructure.RoomOptionRepository;
 import com.nanum.houseservice.room.domain.Room;
@@ -13,6 +18,9 @@ import com.nanum.houseservice.room.dto.RoomDto;
 import com.nanum.houseservice.room.infrastructure.RoomImgRepository;
 import com.nanum.houseservice.room.infrastructure.RoomOptionConnRepository;
 import com.nanum.houseservice.room.infrastructure.RoomRepository;
+import com.nanum.houseservice.room.vo.HostRoomResponse;
+import com.nanum.houseservice.room.vo.RoomImgResponse;
+import com.nanum.houseservice.room.vo.RoomOptionConnResponse;
 import com.nanum.houseservice.room.vo.RoomResponse;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
@@ -103,5 +111,32 @@ public class RoomServiceImpl implements RoomService {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         return Arrays.asList(mapper.map(rooms, RoomResponse[].class));
+    }
+
+    @Override
+    public HostRoomResponse retrieveHostRoom(Long houseId, Long roomId) {
+        Room room = roomRepository.findById(roomId).get();
+
+        List<RoomImg> roomImgs = roomImgRepository.findAllByRoomId(roomId);
+        List<RoomOptionConn> roomOptionConns = roomOptionConnRepository.findAllByRoomId(roomId);
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        RoomResponse roomResponse = mapper.map(room, RoomResponse.class);
+        List<RoomImgResponse> roomImgResponses = Arrays.asList(mapper.map(roomImgs, RoomImgResponse[].class));
+        List<RoomOptionConnResponse> roomOptionConnResponses = new ArrayList<>();
+
+        roomOptionConns.forEach(h -> roomOptionConnResponses.add(RoomOptionConnResponse.builder()
+                .id(h.getId())
+                .optionName(h.getRoomOption().getOptionName())
+                .iconPath(h.getRoomOption().getIconPath())
+                .build()));
+
+        return HostRoomResponse.builder()
+                .room(roomResponse)
+                .roomImgs(roomImgResponses)
+                .roomOptionConn(roomOptionConnResponses)
+                .build();
     }
 }

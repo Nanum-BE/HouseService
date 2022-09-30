@@ -3,6 +3,7 @@ package com.nanum.houseservice.room.presentation;
 import com.nanum.config.BaseResponse;
 import com.nanum.houseservice.room.application.RoomService;
 import com.nanum.houseservice.room.dto.RoomDto;
+import com.nanum.houseservice.room.vo.HostRoomResponse;
 import com.nanum.houseservice.room.vo.RoomRequest;
 import com.nanum.houseservice.room.vo.RoomResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,8 +64,13 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
-    //TODO #3: 방 상세 조회 API
+    @Operation(summary = "방 상세 조회 API", description = "호스트가 하우스의 특정 방 정보를 조회하는 요청")
+    @GetMapping("/houses/{houseId}/rooms/{roomId}")
+    public ResponseEntity<Object> retrieveHostRoom(@PathVariable Long houseId, @PathVariable Long roomId) {
+        HostRoomResponse response = roomService.retrieveHostRoom(houseId, roomId);
 
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
 
     //TODO #4: 방 수정 API
 
