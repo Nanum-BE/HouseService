@@ -13,6 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseRequest {
+    @NotNull(message = "hostId cannot be null")
+    @Schema(description = "호스트 식별자", defaultValue = "1")
+    private Long hostId;
+
     @NotNull(message = "streetAddress cannot be null")
     @Schema(description = "도로명 주소", defaultValue = "부산광역시 부산진구 엄광로 999")
     private String streetAddress;
