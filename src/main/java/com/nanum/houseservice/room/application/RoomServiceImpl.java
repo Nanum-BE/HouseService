@@ -9,12 +9,14 @@ import com.nanum.houseservice.house.infrastructure.HouseRepository;
 import com.nanum.houseservice.house.vo.HouseImgResponse;
 import com.nanum.houseservice.house.vo.HouseOptionConnResponse;
 import com.nanum.houseservice.house.vo.HouseResponse;
+import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.option.domain.RoomOption;
 import com.nanum.houseservice.option.infrastructure.RoomOptionRepository;
 import com.nanum.houseservice.room.domain.Room;
 import com.nanum.houseservice.room.domain.RoomImg;
 import com.nanum.houseservice.room.domain.RoomOptionConn;
 import com.nanum.houseservice.room.dto.RoomDto;
+import com.nanum.houseservice.room.dto.RoomUpdateDto;
 import com.nanum.houseservice.room.infrastructure.RoomImgRepository;
 import com.nanum.houseservice.room.infrastructure.RoomOptionConnRepository;
 import com.nanum.houseservice.room.infrastructure.RoomRepository;
@@ -25,6 +27,7 @@ import com.nanum.houseservice.room.vo.RoomResponse;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
 
@@ -138,5 +142,52 @@ public class RoomServiceImpl implements RoomService {
                 .roomImgs(roomImgResponses)
                 .roomOptionConn(roomOptionConnResponses)
                 .build();
+    }
+
+    @Override
+    public void updateRoom(Long houseId, Long roomId,
+                           RoomUpdateDto roomDto, MultipartFile roomMainImg) {
+
+        Room room = roomRepository.findById(roomId).get();
+        roomDto.setStatus(room.getStatus());
+        roomDto.setContractEndAt(room.getContractEndAt());
+
+        S3UploadDto roomMainImgDto;
+
+        try {
+            if(roomMainImg != null && !roomMainImg.isEmpty()) {
+                roomMainImgDto = s3UploaderService.upload(List.of(roomMainImg), "room").get(0);
+            } else {
+                roomMainImgDto = S3UploadDto.builder()
+                        .originName(room.getMainRoomImgOriginName())
+                        .saveName(room.getMainRoomImgSaveName())
+                        .imgUrl(room.getMainRoomImgPath())
+                        .build();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Room newRoom = roomDto.updateRoomDtoToEntity(room.getHouse(), roomMainImgDto, roomId);
+        roomRepository.save(newRoom);
+
+        try {
+            if(roomDto.getDeleteRoomOption().size() > 0) {
+                List<Long> deleteRoomOptions = roomDto.getDeleteRoomOption();
+                roomOptionConnRepository.deleteAllById(deleteRoomOptions);
+            }
+            if(roomDto.getCreateRoomOption().size() > 0) {
+                for (Long roomOptionId : roomDto.getCreateRoomOption()) {
+                    RoomOption roomOption = roomOptionRepository.findById(roomOptionId).orElse(null);
+                    RoomOptionConn roomOptionConn = RoomOptionConn.builder()
+                            .room(room)
+                            .roomOption(roomOption)
+                            .build();
+                    roomOptionConnRepository.save(roomOptionConn);
+                }
+            }
+        } catch (Exception e) {
+            log.info("기존 방 옵션 유지");
+        }
     }
 }
