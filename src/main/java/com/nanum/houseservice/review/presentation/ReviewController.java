@@ -54,6 +54,15 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(result));
     }
 
+    @Operation(summary = "리뷰 목록 조회 API", description = "사용자가 하우스의 리뷰 목록을 조회하는 요청")
+    @GetMapping("/houses/{houseId}/reviews")
+    public ResponseEntity<Object> retrieveHouseReviews(@PathVariable Long houseId) {
+
+        List<ReviewShortResponse> reviewResponse = reviewService.retrieveHouseReviews(houseId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(reviewResponse));
+    }
+
     @Operation(summary = "리뷰 조회 API", description = "사용자가 특정 리뷰를 상세 조회하는 요청")
     @GetMapping("/houses/{houseId}/reviews/{reviewId}")
     public ResponseEntity<Object> retrieveReview(@PathVariable Long houseId, @PathVariable Long reviewId) {
@@ -63,12 +72,22 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(reviewResponse));
     }
 
-    @Operation(summary = "리뷰 목록 조회 API", description = "사용자가 하우스의 리뷰 목록을 조회하는 요청")
-    @GetMapping("/houses/{houseId}/reviews")
-    public ResponseEntity<Object> retrieveHouseReviews(@PathVariable Long houseId) {
+    @Operation(summary = "리뷰 수정 API", description = "사용자가 하우스 리뷰를 수정하는 요청")
+    @PutMapping("/houses/{houseId}/reviews/{reviewId}")
+    public ResponseEntity<Object> updateReview(@PathVariable Long houseId,
+                                               @PathVariable Long reviewId,
+                                               @Valid @RequestBody ReviewRequest reviewRequest) {
 
-        List<ReviewShortResponse> reviewResponse = reviewService.retrieveHouseReviews(houseId);
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(reviewResponse));
+        ReviewDto reviewDto = mapper.map(reviewRequest, ReviewDto.class);
+        reviewDto.setHouseId(houseId);
+
+        reviewService.updateReview(reviewDto, reviewId);
+        String result = "하우스 리뷰 수정이 완료되었습니다.";
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
+
 }

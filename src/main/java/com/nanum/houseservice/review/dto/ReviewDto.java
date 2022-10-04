@@ -30,4 +30,16 @@ public class ReviewDto {
                 .content(content)
                 .build();
     }
+
+    public Review reviewUpdateDtoToEntity(Room room, Long reviewId) {
+        return Review.builder()
+                .id(reviewId)
+                .room(room)
+                .userId(userId)
+                .nickname(nickname)
+                .score(score)
+                .title(title)
+                .content(content)
+                .build();
+    }
 }

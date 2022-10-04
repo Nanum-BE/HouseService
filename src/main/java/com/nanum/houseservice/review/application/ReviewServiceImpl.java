@@ -67,7 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review review = reviewRepository.findById(reviewId).orElse(null);
         if(review == null) {
-            throw new NotFoundException("해당 리뷰 정보가 없습니다.");
+            throw new NotFoundException("해당 리뷰가 존재하지 않습니다.");
         }
 
         List<ReviewImg> reviewImgs = reviewImgRepository.findAllByReviewId(reviewId);
@@ -84,7 +84,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewShortResponse> retrieveHouseReviews(Long houseId) {
         List<Review> review = reviewRepository.findAllByRoomHouseId(houseId);
         if(review == null) {
-            throw new NotFoundException("해당 리뷰 정보가 없습니다.");
+            throw new NotFoundException("해당 리뷰가 존재하지 않습니다.");
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -103,5 +103,16 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         return reviewShortResponses;
+    }
+
+    @Override
+    public void updateReview(ReviewDto reviewDto, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElse(null);
+
+        if(review == null) {
+            throw new NotFoundException("해당 리뷰가 존재하지 않습니다.");
+        }
+
+        reviewRepository.save(reviewDto.reviewUpdateDtoToEntity(review.getRoom(), reviewId));
     }
 }
