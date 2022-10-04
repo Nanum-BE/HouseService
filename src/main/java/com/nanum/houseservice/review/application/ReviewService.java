@@ -13,4 +13,5 @@ public interface ReviewService {
     List<ReviewShortResponse> retrieveHouseReviews(Long houseId);
     void updateReview(ReviewDto reviewDto, Long reviewId);
     void updateReviewImg(Long houseId, Long reviewId, List<Long> deleteReviewImgs, List<MultipartFile> reviewImgs);
+    void deleteReview(Long houseId, Long reviewId);
 }

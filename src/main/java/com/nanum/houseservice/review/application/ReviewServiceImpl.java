@@ -143,4 +143,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewImgRepository.saveAll(reviewImgList);
     }
+
+    @Override
+    public void deleteReview(Long houseId, Long reviewId) {
+        if (reviewRepository.existsById(reviewId)) {
+            reviewRepository.deleteById(reviewId);
+        }
+    }
 }

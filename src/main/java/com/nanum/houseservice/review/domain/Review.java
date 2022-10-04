@@ -11,6 +11,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,4 +44,7 @@ public class Review extends BaseTimeEntity {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
+    private List<ReviewImg> reviewImg;
 }

@@ -102,4 +102,11 @@ public class ReviewController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
+
+    @Operation(summary = "리뷰 삭제 API", description = "사용자가 리뷰를 삭제하는 요청")
+    @DeleteMapping("/houses/{houseId}/reviews/{reviewId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteReview(@PathVariable Long houseId, @PathVariable Long reviewId) {
+        reviewService.deleteReview(houseId, reviewId);
+    }
 }
