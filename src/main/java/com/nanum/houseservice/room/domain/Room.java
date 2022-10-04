@@ -4,16 +4,25 @@ import com.nanum.config.BaseTimeEntity;
 import com.nanum.config.Gender;
 import com.nanum.config.RoomStatus;
 import com.nanum.houseservice.house.domain.House;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "update room set delete_at=now() where id=?")
+@Where(clause = "delete_at is null")
 public class Room extends BaseTimeEntity {
 
     @Id
@@ -29,6 +38,7 @@ public class Room extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender roomGender;
 
+    @Comment("방 면적")
     @Column(nullable = false)
     private String area;
 
@@ -63,4 +73,12 @@ public class Room extends BaseTimeEntity {
     private RoomStatus status;
 
     private String mainRoomImgPath;
+    private String mainRoomImgOriginName;
+    private String mainRoomImgSaveName;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
+    private List<RoomImg> roomImg;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
+    private List<RoomOptionConn> roomOptionConn;
 }

@@ -19,7 +19,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "update house set delete_at=now() where id=?                                                                                                                                                           ")
+@SQLDelete(sql = "update house set delete_at=now() where id=?")
 @Where(clause = "delete_at is null")
 public class House extends BaseTimeEntity {
 

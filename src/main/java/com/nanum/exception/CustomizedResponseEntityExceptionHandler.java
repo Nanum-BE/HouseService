@@ -34,6 +34,15 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CustomRunTimeException.class)
+    public final ResponseEntity<Object> handleCustomRunTimeExceptionException(Exception ex, WebRequest request){
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초")),
+                        ex.getMessage(), request.getDescription(false));
+
+        return new ResponseEntity(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(NoHouseFileException.class)
     public final ResponseEntity<Object> handleNoHouseFileException(Exception ex, WebRequest request) {
         ExceptionResponse exceptionResponse =
