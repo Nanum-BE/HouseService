@@ -190,4 +190,30 @@ public class RoomServiceImpl implements RoomService {
             log.info("기존 방 옵션 유지");
         }
     }
+
+    @Override
+    public void updateRoomImg(Long houseId, Long roomId, List<Long> deleteRoomImgs, List<MultipartFile> roomImgs) {
+        if(deleteRoomImgs != null && !deleteRoomImgs.isEmpty()) {
+            roomImgRepository.deleteAllById(deleteRoomImgs);
+        }
+
+        List<S3UploadDto> roomImgsDto = new ArrayList<>();
+
+        try {
+            if(roomImgs != null && !roomImgs.isEmpty() && !roomImgs.get(0).isEmpty()) {
+                roomImgsDto = s3UploaderService.upload(roomImgs, "room");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Room room = roomRepository.findById(roomId).get();
+        List<RoomImg> roomImgList = new ArrayList<>();
+
+        for (S3UploadDto s3UploadDto : roomImgsDto) {
+            roomImgList.add(s3UploadDto.roomImgToEntity(room));
+        }
+
+        roomImgRepository.saveAll(roomImgList);
+    }
 }

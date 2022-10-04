@@ -75,6 +75,7 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
+    @Operation(summary = "방 정보 수정 API", description = "호스트가 하우스의 특정 방 정보를 수정하는 요청")
     @PutMapping("/houses/{houseId}/rooms/{roomId}")
     public ResponseEntity<Object> updateRoom(@PathVariable Long houseId,
                                              @PathVariable Long roomId,
@@ -91,7 +92,19 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
 
-    //TODO #5: 방 삭제 API
+    @Operation(summary = "방 이미지 수정 API", description = "호스트가 하우스의 특정 방 이미지를 수정하는 요청")
+    @PutMapping("/houses/{houseId}/rooms/{roomId}/image")
+    public ResponseEntity<Object> updateRoomImg(@PathVariable Long houseId,
+                                                @PathVariable Long roomId,
+                                                @RequestPart(required = false) List<Long> deleteRoomImgs,
+                                                @RequestPart(required = false) List<MultipartFile> roomImgs) {
+        roomService.updateRoomImg(houseId, roomId, deleteRoomImgs, roomImgs);
+        String result = "방 이미지 수정이 완료되었습니다.";
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
+    }
+
+    //TODO #6: 방 삭제 API
 
 
 }
