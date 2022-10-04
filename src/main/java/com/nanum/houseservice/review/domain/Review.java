@@ -1,0 +1,43 @@
+package com.nanum.houseservice.review.domain;
+
+import com.nanum.config.BaseTimeEntity;
+import com.nanum.houseservice.house.domain.House;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import javax.persistence.*;
+
+@Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "update review set delete_at=now() where id=?")
+@Where(clause = "delete_at is null")
+public class Review extends BaseTimeEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    House house;
+
+    @Column(nullable = false)
+    private Long userId;
+
+    @Comment("리뷰 점수 - 1~5점")
+    @Column(nullable = false)
+    private int score;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
+}
