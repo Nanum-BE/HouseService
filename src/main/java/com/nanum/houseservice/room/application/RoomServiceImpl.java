@@ -1,6 +1,7 @@
 package com.nanum.houseservice.room.application;
 
 import com.nanum.config.RoomStatus;
+import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.domain.HouseImg;
@@ -52,7 +53,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void createRoom(RoomDto roomDto, MultipartFile roomMainImg, List<MultipartFile> roomImgs) {
         roomDto.setStatus(RoomStatus.WAITING);
-        Room room;
+        Room room = null;
 
         try {
             S3UploadDto roomMainImgDto = new S3UploadDto();
@@ -61,12 +62,15 @@ public class RoomServiceImpl implements RoomService {
                 roomMainImgDto = s3UploaderService.upload(List.of(roomMainImg), "roomMain").get(0);
             }
 
-            House house = houseRepository.findById(roomDto.getHouseId()).get();
-            room = roomDto.roomDtoToEntity(house, roomMainImgDto);
-            room = roomRepository.save(room);
+            House house = houseRepository.findById(roomDto.getHouseId()).orElse(null);
+
+            if(house != null) {
+                room = roomDto.roomDtoToEntity(house, roomMainImgDto);
+                room = roomRepository.save(room);
+            }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CustomRunTimeException("Server Error");
         }
 
         if(roomDto.getRoomOption() != null) {
@@ -80,7 +84,7 @@ public class RoomServiceImpl implements RoomService {
                     roomOptionConnRepository.save(roomOptionConn);
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new CustomRunTimeException("Server Error");
             }
         }
 
@@ -98,7 +102,7 @@ public class RoomServiceImpl implements RoomService {
             roomImgRepository.saveAll(imgList);
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CustomRunTimeException("Server Error");
         }
     }
 
@@ -165,7 +169,7 @@ public class RoomServiceImpl implements RoomService {
                         .build();
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CustomRunTimeException("Server Error");
         }
 
         Room newRoom = roomDto.updateRoomDtoToEntity(room.getHouse(), roomMainImgDto, roomId);
@@ -188,6 +192,7 @@ public class RoomServiceImpl implements RoomService {
             }
         } catch (Exception e) {
             log.info("기존 방 옵션 유지");
+            throw new CustomRunTimeException("Server Error");
         }
     }
 
@@ -204,14 +209,16 @@ public class RoomServiceImpl implements RoomService {
                 roomImgsDto = s3UploaderService.upload(roomImgs, "room");
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CustomRunTimeException("Server Error");
         }
 
-        Room room = roomRepository.findById(roomId).get();
+        Room room = roomRepository.findById(roomId).orElse(null);
         List<RoomImg> roomImgList = new ArrayList<>();
 
-        for (S3UploadDto s3UploadDto : roomImgsDto) {
-            roomImgList.add(s3UploadDto.roomImgToEntity(room));
+        if(room != null) {
+            for (S3UploadDto s3UploadDto : roomImgsDto) {
+                roomImgList.add(s3UploadDto.roomImgToEntity(room));
+            }
         }
 
         roomImgRepository.saveAll(roomImgList);
