@@ -31,6 +31,9 @@ public class Review extends BaseTimeEntity {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
+    private String nickname;
+
     @Comment("리뷰 점수 - 1~5점")
     @Column(nullable = false)
     private int score;

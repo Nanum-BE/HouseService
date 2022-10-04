@@ -15,6 +15,7 @@ public class ReviewDto {
     private Long houseId;
     private Long roomId;
     private Long userId;
+    private String nickname;
     private int score;
     private String title;
     private String content;
@@ -23,6 +24,7 @@ public class ReviewDto {
         return Review.builder()
                 .room(room)
                 .userId(userId)
+                .nickname(nickname)
                 .score(score)
                 .title(title)
                 .content(content)

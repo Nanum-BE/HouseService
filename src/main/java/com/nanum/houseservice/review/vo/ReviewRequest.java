@@ -15,6 +15,10 @@ public class ReviewRequest {
     @Schema(description = "유저 식별자", defaultValue = "1")
     private Long userId;
 
+    @NotNull(message = "nickname cannot be null")
+    @Schema(description = "작성자 닉네임", defaultValue = "김철수")
+    private String nickname;
+
     @NotNull(message = "roomId cannot be null")
     @Schema(description = "방 식별자", defaultValue = "1")
     private Long roomId;
