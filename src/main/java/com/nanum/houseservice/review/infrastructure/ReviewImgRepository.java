@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ReviewImgRepository extends JpaRepository<ReviewImg, Long> {
     List<ReviewImg> findAllByReviewId(Long reviewId);
+    ReviewImg findTop1ByReviewId(Long reviewId);
 }

@@ -9,6 +9,7 @@ import com.nanum.houseservice.review.infrastructure.ReviewImgRepository;
 import com.nanum.houseservice.review.infrastructure.ReviewRepository;
 import com.nanum.houseservice.review.vo.ReviewImgResponse;
 import com.nanum.houseservice.review.vo.ReviewResponse;
+import com.nanum.houseservice.review.vo.ReviewShortResponse;
 import com.nanum.houseservice.room.domain.Room;
 import com.nanum.houseservice.room.infrastructure.RoomRepository;
 import com.nanum.util.s3.S3UploadDto;
@@ -77,5 +78,30 @@ public class ReviewServiceImpl implements ReviewService {
         List<ReviewImgResponse> reviewImgResponses = Arrays.asList(mapper.map(reviewImgs, ReviewImgResponse[].class));
 
         return new ReviewResponse().entityToReviewResponse(review, reviewImgResponses);
+    }
+
+    @Override
+    public List<ReviewShortResponse> retrieveHouseReviews(Long houseId) {
+        List<Review> review = reviewRepository.findAllByRoomHouseId(houseId);
+        if(review == null) {
+            throw new NotFoundException("해당 리뷰 정보가 없습니다.");
+        }
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        List<ReviewShortResponse> reviewShortResponses = new ArrayList<>();
+
+        for(Review r : review) {
+            ReviewImg reviewImg = reviewImgRepository.findTop1ByReviewId(r.getId());
+            ReviewImgResponse reviewImgResponse = null;
+
+            if(reviewImg != null) {
+                reviewImgResponse = mapper.map(reviewImg, ReviewImgResponse.class);
+            }
+
+            reviewShortResponses.add(new ReviewShortResponse().entityToReviewShortResponse(r, reviewImgResponse));
+        }
+
+        return reviewShortResponses;
     }
 }

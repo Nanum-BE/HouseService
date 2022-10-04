@@ -5,6 +5,7 @@ import com.nanum.houseservice.review.application.ReviewService;
 import com.nanum.houseservice.review.dto.ReviewDto;
 import com.nanum.houseservice.review.vo.ReviewRequest;
 import com.nanum.houseservice.review.vo.ReviewResponse;
+import com.nanum.houseservice.review.vo.ReviewShortResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,6 +60,15 @@ public class ReviewController {
 
         ReviewResponse reviewResponse = reviewService.retrieveReview(houseId, reviewId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(reviewResponse));
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(reviewResponse));
+    }
+
+    @Operation(summary = "리뷰 목록 조회 API", description = "사용자가 하우스의 리뷰 목록을 조회하는 요청")
+    @GetMapping("/houses/{houseId}/reviews")
+    public ResponseEntity<Object> retrieveHouseReviews(@PathVariable Long houseId) {
+
+        List<ReviewShortResponse> reviewResponse = reviewService.retrieveHouseReviews(houseId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(reviewResponse));
     }
 }
