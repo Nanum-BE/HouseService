@@ -115,4 +115,32 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepository.save(reviewDto.reviewUpdateDtoToEntity(review.getRoom(), reviewId));
     }
+
+    @Override
+    public void updateReviewImg(Long houseId, Long reviewId, List<Long> deleteReviewImgs, List<MultipartFile> reviewImgs) {
+        if(deleteReviewImgs != null && !deleteReviewImgs.isEmpty()) {
+            reviewImgRepository.deleteAllById(deleteReviewImgs);
+        }
+
+        List<S3UploadDto> reviewImgsDto = new ArrayList<>();
+
+        try {
+            if (reviewImgs != null && !reviewImgs.isEmpty() && !reviewImgs.get(0).isEmpty()) {
+                reviewImgsDto = s3UploaderService.upload(reviewImgs, "review");
+            }
+        } catch (Exception e) {
+            throw new CustomRunTimeException("Server Error");
+        }
+
+        Review review = reviewRepository.findById(reviewId).orElse(null);
+        List<ReviewImg> reviewImgList = new ArrayList<>();
+
+        if(review != null) {
+            for (S3UploadDto s3UploadDto : reviewImgsDto) {
+                reviewImgList.add(s3UploadDto.reviewImgToEntity(review));
+            }
+        }
+
+        reviewImgRepository.saveAll(reviewImgList);
+    }
 }

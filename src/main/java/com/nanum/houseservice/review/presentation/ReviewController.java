@@ -90,4 +90,16 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
 
+    @Operation(summary = "리뷰 이미지 수정 API", description = "사용자가 하우스 리뷰 이미지를 수정하는 요청")
+    @PutMapping("/houses/{houseId}/reviews/{reviewId}/image")
+    public ResponseEntity<Object> updateReviewImg(@PathVariable Long houseId,
+                                                  @PathVariable Long reviewId,
+                                                  @RequestPart(required = false) List<Long> deleteReviewImgs,
+                                                  @RequestPart(required = false) List<MultipartFile> reviewImgs) {
+
+        reviewService.updateReviewImg(houseId, reviewId, deleteReviewImgs, reviewImgs);
+        String result = "하우스 리뷰 이미지 수정이 완료되었습니다.";
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
+    }
 }
