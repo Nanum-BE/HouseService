@@ -38,7 +38,7 @@ public class HouseController {
     private final HouseService houseService;
 
     @Operation(summary = "하우스 등록 API", description = "호스트가 하우스를 등록하는 요청")
-    @PostMapping("/v1/houses")
+    @PostMapping("/houses")
     public ResponseEntity<Object> createHouse(@Valid @RequestPart HouseRequest houseRequest,
                                               @RequestPart(value = "houseMainImg", required = false) MultipartFile houseMainImg,
                                               @RequestPart(value = "floorPlanImg", required = false) MultipartFile floorPlanImg,
@@ -61,7 +61,7 @@ public class HouseController {
     }
 
     @Operation(summary = "본인 하우스 목록 조회 API", description = "호스트가 본인 하우스 목록을 조회하는 요청")
-    @GetMapping("/v1/houses/{hostId}")
+    @GetMapping("/houses/{hostId}")
     public ResponseEntity<Object> retrieveHostAllHouses(@PathVariable("hostId") Long hostId) {
 
         List<HostHouseResponse> response = houseService.retrieveHostAllHouses(hostId);
@@ -70,7 +70,7 @@ public class HouseController {
     }
 
     @Operation(summary = "본인 하우스 상세 조회 API", description = "호스트가 본인 하우스 상세 정보를 조회하는 요청")
-    @GetMapping("/v1/houses/{hostId}/{houseId}")
+    @GetMapping("/houses/{hostId}/{houseId}")
     public ResponseEntity<Object> retrieveHostHouse(@PathVariable("hostId") Long hostId,
                                                     @PathVariable("houseId") Long houseId) {
 
@@ -80,7 +80,7 @@ public class HouseController {
     }
 
     @Operation(summary = "하우스 수정 API", description = "호스트가 본인 하우스 정보 및 하우스 옵션을 수정하는 요청")
-    @PutMapping("/v1/houses/{hostId}/{houseId}")
+    @PutMapping("/houses/{hostId}/{houseId}")
     public ResponseEntity<Object> updateHouse(@PathVariable("hostId") Long hostId,
                                               @PathVariable("houseId") Long houseId,
                                               @Valid @RequestPart HouseUpdateRequest houseUpdateRequest,
@@ -100,7 +100,7 @@ public class HouseController {
     }
 
     @Operation(summary = "하우스 이미지 수정 API", description = "호스트가 본인 하우스 상세 이미지를 수정하는 요청")
-    @PutMapping("/v1/houses/{hostId}/{houseId}/image")
+    @PutMapping("/houses/{hostId}/{houseId}/image")
     public ResponseEntity<Object> updateHouseImg(@PathVariable("hostId") Long hostId,
                                               @PathVariable("houseId") Long houseId,
                                               @RequestPart(required = false) List<Long> deleteHouseImgs,
@@ -113,7 +113,7 @@ public class HouseController {
     }
 
     @Operation(summary = "하우스 서류 수정 API", description = "호스트가 본인 하우스 서류를 수정하는 요청")
-    @PutMapping("/v1/houses/{hostId}/{houseId}/file")
+    @PutMapping("/houses/{hostId}/{houseId}/file")
     public ResponseEntity<Object> updateHouseFile(@PathVariable("hostId") Long hostId,
                                                  @PathVariable("houseId") Long houseId,
                                                  @RequestPart(required = false) MultipartFile houseFile) {
@@ -129,7 +129,7 @@ public class HouseController {
     }
 
     @Operation(summary = "하우스 서류 조회 API", description = "하우스 서류를 조회하는 요청")
-    @GetMapping("/v1/houses/{hostId}/{houseId}/file")
+    @GetMapping("/houses/{hostId}/{houseId}/file")
     public ResponseEntity<Object> retrieveHouseFile(@PathVariable Long hostId,
                                                     @PathVariable Long houseId) {
 
