@@ -4,6 +4,7 @@ import com.nanum.config.BaseResponse;
 import com.nanum.houseservice.review.application.ReviewService;
 import com.nanum.houseservice.review.dto.ReviewDto;
 import com.nanum.houseservice.review.vo.ReviewRequest;
+import com.nanum.houseservice.review.vo.ReviewResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,7 +36,7 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @Operation(summary = "리뷰 등록 API", description = "호스트가 하우스의 방을 등록하는 요청")
+    @Operation(summary = "리뷰 등록 API", description = "사용자가 리뷰를 등록하는 요청")
     @PostMapping("/houses/{houseId}/reviews")
     public ResponseEntity<Object> createReview(@PathVariable Long houseId,
                                                @Valid @RequestPart ReviewRequest reviewRequest,
@@ -50,5 +51,14 @@ public class ReviewController {
         String result = "리뷰 등록이 완료되었습니다.";
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(result));
+    }
+
+    @Operation(summary = "리뷰 조회 API", description = "사용자가 특정 리뷰를 상세 조회하는 요청")
+    @GetMapping("/houses/{houseId}/reviews/{reviewId}")
+    public ResponseEntity<Object> retrieveReview(@PathVariable Long houseId, @PathVariable Long reviewId) {
+
+        ReviewResponse reviewResponse = reviewService.retrieveReview(houseId, reviewId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(reviewResponse));
     }
 }
