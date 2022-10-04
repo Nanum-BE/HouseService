@@ -1,7 +1,7 @@
 package com.nanum.houseservice.review.domain;
 
 import com.nanum.config.BaseTimeEntity;
-import com.nanum.houseservice.house.domain.House;
+import com.nanum.houseservice.room.domain.Room;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class Review extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    House house;
+    Room room;
 
     @Column(nullable = false)
     private Long userId;

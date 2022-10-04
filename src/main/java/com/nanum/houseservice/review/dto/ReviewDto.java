@@ -1,7 +1,7 @@
 package com.nanum.houseservice.review.dto;
 
-import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.review.domain.Review;
+import com.nanum.houseservice.room.domain.Room;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,14 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReviewDto {
     private Long houseId;
+    private Long roomId;
     private Long userId;
     private int score;
     private String title;
     private String content;
 
-    public Review reviewDtoToEntity(House house) {
+    public Review reviewDtoToEntity(Room room) {
         return Review.builder()
-                .house(house)
+                .room(room)
                 .userId(userId)
                 .score(score)
                 .title(title)

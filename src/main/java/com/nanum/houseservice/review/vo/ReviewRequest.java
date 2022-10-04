@@ -15,6 +15,10 @@ public class ReviewRequest {
     @Schema(description = "유저 식별자", defaultValue = "1")
     private Long userId;
 
+    @NotNull(message = "roomId cannot be null")
+    @Schema(description = "방 식별자", defaultValue = "1")
+    private Long roomId;
+
     @NotNull(message = "score cannot be null")
     @Max(value = 5)
     @Min(value = 1)
