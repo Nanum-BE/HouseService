@@ -216,4 +216,11 @@ public class RoomServiceImpl implements RoomService {
 
         roomImgRepository.saveAll(roomImgList);
     }
+
+    @Override
+    public void deleteRoom(Long houseId, Long roomId) {
+        if(roomRepository.existsById(roomId)) {
+            roomRepository.deleteById(roomId);
+        }
+    }
 }

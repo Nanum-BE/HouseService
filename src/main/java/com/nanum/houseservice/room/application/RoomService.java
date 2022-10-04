@@ -14,4 +14,5 @@ public interface RoomService {
     HostRoomResponse retrieveHostRoom(Long houseId, Long roomId);
     void updateRoom(Long houseId, Long roomId, RoomUpdateDto roomDto, MultipartFile roomMainImg);
     void updateRoomImg(Long houseId, Long roomId, List<Long> deleteRoomImgs, List<MultipartFile> roomImgs);
+    void deleteRoom(Long houseId, Long roomId);
 }

@@ -16,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "update room_option_conn set delete_at=now() where id=?                                                                                                                                                           ")
+@SQLDelete(sql = "update room_option_conn set delete_at=now() where id=?")
 @Where(clause = "delete_at is null")
 public class RoomOptionConn extends BaseTimeEntity {
     @Id

@@ -14,13 +14,14 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "update room set delete_at=now() where id=?                                                                                                                                                           ")
+@SQLDelete(sql = "update room set delete_at=now() where id=?")
 @Where(clause = "delete_at is null")
 public class Room extends BaseTimeEntity {
 
@@ -74,4 +75,10 @@ public class Room extends BaseTimeEntity {
     private String mainRoomImgPath;
     private String mainRoomImgOriginName;
     private String mainRoomImgSaveName;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
+    private List<RoomImg> roomImg;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
+    private List<RoomOptionConn> roomOptionConn;
 }

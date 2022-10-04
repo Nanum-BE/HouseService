@@ -1,7 +1,6 @@
 package com.nanum.houseservice.room.presentation;
 
 import com.nanum.config.BaseResponse;
-import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.room.application.RoomService;
 import com.nanum.houseservice.room.dto.RoomDto;
 import com.nanum.houseservice.room.dto.RoomUpdateDto;
@@ -29,10 +28,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "방", description = "방 관련 api")
+@Tag(name = "방", description = "방 관련 API")
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "success", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
         @ApiResponse(responseCode = "201", description = "created successfully", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
+        @ApiResponse(responseCode = "204", description = "deleted successfully"),
         @ApiResponse(responseCode = "400", description = "bad request", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
         @ApiResponse(responseCode = "500", description = "server error", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
 })
@@ -104,7 +104,11 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
 
-    //TODO #6: 방 삭제 API
-
+    @Operation(summary = "방 삭제 API", description = "호스트가 하우스의 특정 방을 삭제하는 요청")
+    @DeleteMapping("/houses/{houseId}/rooms/{roomId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteRoom(@PathVariable Long houseId, @PathVariable Long roomId) {
+        roomService.deleteRoom(houseId, roomId);
+    }
 
 }

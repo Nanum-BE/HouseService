@@ -5,18 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "update room_img set delete_at=now() where id=?                                                                                                                                                           ")
+@SQLDelete(sql = "update room_img set delete_at=now() where id=?")
 @Where(clause = "delete_at is null")
 public class RoomImg extends BaseTimeEntity {
 
