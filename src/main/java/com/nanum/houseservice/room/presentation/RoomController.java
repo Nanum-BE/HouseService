@@ -1,6 +1,7 @@
 package com.nanum.houseservice.room.presentation;
 
 import com.nanum.config.BaseResponse;
+import com.nanum.exception.ExceptionResponse;
 import com.nanum.houseservice.room.application.RoomService;
 import com.nanum.houseservice.room.dto.RoomDto;
 import com.nanum.houseservice.room.dto.RoomUpdateDto;
@@ -33,8 +34,8 @@ import java.util.List;
         @ApiResponse(responseCode = "200", description = "success", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
         @ApiResponse(responseCode = "201", description = "created successfully", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
         @ApiResponse(responseCode = "204", description = "deleted successfully"),
-        @ApiResponse(responseCode = "400", description = "bad request", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
-        @ApiResponse(responseCode = "500", description = "server error", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
+        @ApiResponse(responseCode = "400", description = "bad request", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+        @ApiResponse(responseCode = "500", description = "server error", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
 })
 public class RoomController {
 
