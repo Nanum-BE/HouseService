@@ -2,18 +2,13 @@ package com.nanum.houseservice.house.application;
 
 import com.nanum.config.HouseStatus;
 import com.nanum.exception.NotFoundException;
-import com.nanum.houseservice.house.domain.House;
-import com.nanum.houseservice.house.domain.HouseFile;
-import com.nanum.houseservice.house.domain.HouseImg;
+import com.nanum.houseservice.house.domain.*;
+import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseSearchDto;
 import com.nanum.houseservice.house.dto.HouseUpdateDto;
-import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
+import com.nanum.houseservice.house.infrastructure.*;
 import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
-import com.nanum.houseservice.house.domain.HouseOptionConn;
-import com.nanum.houseservice.house.dto.HouseDto;
-import com.nanum.houseservice.house.infrastructure.HouseFileRepository;
-import com.nanum.houseservice.house.infrastructure.HouseImgRepository;
-import com.nanum.houseservice.house.infrastructure.HouseRepository;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
@@ -27,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +35,8 @@ public class HouseServiceImpl implements HouseService {
     private final HouseImgRepository houseImgRepository;
     private final HouseOptionRepository houseOptionRepository;
     private final HouseOptionConnRepository houseOptionConnRepository;
+    private final HouseSearchRepository houseSearchRepository;
+    private final HouseSearchQueryRepository houseSearchQueryRepository;
 
     @Override
     public void createHouse(HouseDto houseDto, MultipartFile houseMainImg,
@@ -63,6 +61,9 @@ public class HouseServiceImpl implements HouseService {
 
             house = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, null);
             house = houseRepository.save(house);
+
+            HouseDocument houseDocument = HouseDocument.from(house);
+            houseSearchRepository.save(houseDocument);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -258,6 +259,20 @@ public class HouseServiceImpl implements HouseService {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         return mapper.map(houseFile, HouseFileResponse.class);
+    }
+
+    public List<HouseResponse> retrieveHouseByHouseName(String houseName) {
+        return houseSearchRepository.findByHouseName(houseName)
+                .stream()
+                .map(HouseResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<HouseResponse> searchByCondition(HouseSearchDto houseSearchDto) {
+        return houseSearchQueryRepository.findByCondition(houseSearchDto)
+                .stream()
+                .map(HouseResponse::from)
+                .collect(Collectors.toList());
     }
 
 }

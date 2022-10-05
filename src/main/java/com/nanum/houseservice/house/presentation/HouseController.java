@@ -5,6 +5,7 @@ import com.nanum.exception.ExceptionResponse;
 import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseSearchDto;
 import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -136,6 +137,18 @@ public class HouseController {
 
         HouseFileResponse response = houseService.retrieveHouseFile(hostId, houseId);
 
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @GetMapping("/test1")
+    public ResponseEntity<Object> test1(@RequestParam String houseName) {
+        List<HouseResponse> response = houseService.retrieveHouseByHouseName(houseName);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @GetMapping("/test2")
+    public ResponseEntity<Object> test2(@RequestBody HouseSearchDto houseSearchDto) {
+        List<HouseResponse> response = houseService.searchByCondition(houseSearchDto);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 

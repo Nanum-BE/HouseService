@@ -2,17 +2,15 @@ package com.nanum.houseservice.house.vo;
 
 import com.nanum.config.Gender;
 import com.nanum.config.HouseStatus;
-import com.nanum.houseservice.option.vo.HouseOptionResponse;
+import com.nanum.houseservice.house.domain.HouseDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseResponse {
@@ -65,4 +63,20 @@ public class HouseResponse {
     @Schema(description = "하우스 옵션 연결 반환 객체")
     private List<HouseOptionConnResponse> houseOptionConn;
 
+    public static HouseResponse from(HouseDocument house) {
+        return HouseResponse.builder()
+                .id(house.getId())
+                .streetAddress(house.getStreetAddress())
+                .zipCode(house.getZipCode())
+                .explanation(house.getExplanation())
+                .houseName(house.getHouseName())
+                .houseType(house.getHouseType())
+                .lat(house.getLat())
+                .lon(house.getLon())
+                .houseGender(house.getHouseGender())
+                .mainHouseImgPath(house.getMainHouseImgPath())
+                .floorPlanPath(house.getFloorPlanPath())
+                .status(house.getStatus())
+                .build();
+    }
 }
