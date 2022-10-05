@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 public class WishController {
     private final WishService wishService;
 
-    @Operation(summary = "좋아요 API", description = "사용자가 하우스를 좋아요에 추가하는 요청")
+    @Operation(summary = "좋아요 API", description = "사용자가 하우스 좋아요를 추가하는 요청")
     @PostMapping("/users/{userId}/wishes")
     public ResponseEntity<Object> createWish(@PathVariable Long userId, @RequestBody WishRequest wishRequest) {
 
@@ -52,7 +52,12 @@ public class WishController {
     }
 
     //TODO #2 : 좋아요 취소 DELETE 요청
-
+    @Operation(summary = "좋아요 취소 API", description = "사용자가 하우스 좋아요를 취소하는 요청")
+    @DeleteMapping("/users/{userId}/wishes/{wishId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteWish(@PathVariable Long userId, @PathVariable Long wishId) {
+        wishService.deleteWish(userId, wishId);
+    }
 
     //TODO #3 : 좋아요 목록 조회 GET 요청
 

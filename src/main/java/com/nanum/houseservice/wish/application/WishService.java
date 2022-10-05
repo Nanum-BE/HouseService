@@ -4,4 +4,5 @@ import com.nanum.houseservice.wish.dto.WishDto;
 
 public interface WishService {
     void createWish(WishDto wishDto);
+    void deleteWish(Long userId, Long wishId);
 }

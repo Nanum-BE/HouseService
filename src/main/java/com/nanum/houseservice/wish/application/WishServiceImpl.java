@@ -33,4 +33,13 @@ public class WishServiceImpl implements WishService{
                         .userId(wishDto.getUserId())
                         .build());
     }
+
+    @Override
+    public void deleteWish(Long userId, Long wishId) {
+        if(wishRepository.existsByIdAndUserId(wishId, userId)) {
+            wishRepository.deleteById(wishId);
+        } else {
+            throw new NotFoundException("해당 좋아요가 존재하지 않습니다.");
+        }
+    }
 }

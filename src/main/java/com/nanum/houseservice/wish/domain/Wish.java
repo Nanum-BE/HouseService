@@ -16,7 +16,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "update wish_id set delete_at=now() where id=?")
+@SQLDelete(sql = "update wish set delete_at=now() where id=?")
 @Where(clause = "delete_at is null")
 public class Wish extends BaseTimeEntity {
     @Id
