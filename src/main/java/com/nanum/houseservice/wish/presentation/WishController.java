@@ -7,6 +7,7 @@ import com.nanum.exception.OverlapException;
 import com.nanum.houseservice.wish.application.WishService;
 import com.nanum.houseservice.wish.dto.WishDto;
 import com.nanum.houseservice.wish.vo.WishRequest;
+import com.nanum.houseservice.wish.vo.WishResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,8 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -51,7 +54,6 @@ public class WishController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(result));
     }
 
-    //TODO #2 : 좋아요 취소 DELETE 요청
     @Operation(summary = "좋아요 취소 API", description = "사용자가 하우스 좋아요를 취소하는 요청")
     @DeleteMapping("/users/{userId}/wishes/{wishId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -59,6 +61,10 @@ public class WishController {
         wishService.deleteWish(userId, wishId);
     }
 
-    //TODO #3 : 좋아요 목록 조회 GET 요청
-
+    @Operation(summary = "좋아요 조회 API", description = "사용자가 좋아요 목록을 조회하는 요청")
+    @GetMapping("/users/{userId}/wishes")
+    public ResponseEntity<Object> retrieveWish(@PathVariable Long userId) {
+        List<WishResponse> wishResponses = wishService.retrieveWish(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(wishResponses));
+    }
 }

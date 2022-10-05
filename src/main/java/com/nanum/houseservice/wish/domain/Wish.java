@@ -2,6 +2,7 @@ package com.nanum.houseservice.wish.domain;
 
 import com.nanum.config.BaseTimeEntity;
 import com.nanum.houseservice.house.domain.House;
+import com.nanum.houseservice.wish.dto.WishDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,4 +30,15 @@ public class Wish extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Long userId;
+
+    public WishDto entityToWishDto() {
+        return WishDto.builder()
+                .wishId(id)
+                .houseId(house.getId())
+                .houseName(house.getHouseName())
+                .lotAddress(house.getLotAddress())
+                .mainHouseImgPath(house.getMainHouseImgPath())
+                .userId(userId)
+                .build();
+    }
 }
