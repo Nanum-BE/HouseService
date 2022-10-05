@@ -1,15 +1,24 @@
 package com.nanum.houseservice.wish.presentation;
 
 import com.nanum.config.BaseResponse;
+import com.nanum.exception.CustomizedResponseEntityExceptionHandler;
+import com.nanum.exception.ExceptionResponse;
+import com.nanum.exception.OverlapException;
 import com.nanum.houseservice.wish.application.WishService;
+import com.nanum.houseservice.wish.dto.WishDto;
+import com.nanum.houseservice.wish.vo.WishRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -19,11 +28,32 @@ import org.springframework.web.bind.annotation.RestController;
         @ApiResponse(responseCode = "200", description = "success", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
         @ApiResponse(responseCode = "201", description = "created successfully", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
         @ApiResponse(responseCode = "204", description = "deleted successfully"),
-        @ApiResponse(responseCode = "400", description = "bad request", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
-        @ApiResponse(responseCode = "500", description = "server error", content = @Content(schema = @Schema(implementation = BaseResponse.class))),
+        @ApiResponse(responseCode = "400", description = "bad request", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+        @ApiResponse(responseCode = "409", description = "conflicted data", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+        @ApiResponse(responseCode = "500", description = "server error", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
 })
 public class WishController {
     private final WishService wishService;
 
+    @Operation(summary = "좋아요 API", description = "사용자가 하우스를 좋아요에 추가하는 요청")
+    @PostMapping("/users/{userId}/wishes")
+    public ResponseEntity<Object> createWish(@PathVariable Long userId, @RequestBody WishRequest wishRequest) {
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        WishDto wishDto = mapper.map(wishRequest, WishDto.class);
+        wishDto.setUserId(userId);
+
+        wishService.createWish(wishDto);
+        String result = "좋아요 추가가 완료되었습니다.";
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(result));
+    }
+
+    //TODO #2 : 좋아요 취소 DELETE 요청
+
+
+    //TODO #3 : 좋아요 목록 조회 GET 요청
 
 }
