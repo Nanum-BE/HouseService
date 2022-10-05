@@ -1,27 +1,36 @@
 package com.nanum.houseservice.room.domain;
 
-import com.nanum.houseservice.config.BaseTimeEntity;
-import com.nanum.houseservice.config.Gender;
-import com.nanum.houseservice.config.MoveState;
+import com.nanum.config.BaseTimeEntity;
+import com.nanum.config.Gender;
+import com.nanum.config.RoomStatus;
 import com.nanum.houseservice.house.domain.House;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "update room set delete_at=now() where id=?")
+@Where(clause = "delete_at is null")
 public class Room extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "houseId", nullable = false)
+    @JoinColumn(nullable = false)
     private House house;
 
     @Comment("방별 이용 가능한 성별 -> 남성, 여성, 공용")
@@ -29,6 +38,7 @@ public class Room extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender roomGender;
 
+    @Comment("방 면적")
     @Column(nullable = false)
     private String area;
 
@@ -58,7 +68,17 @@ public class Room extends BaseTimeEntity {
     @Comment("계약 종료일")
     private LocalDateTime contractEndAt;
 
-    private MoveState moveState;
+    @Comment("방 상태 -> 대기 중, 진행 중, 입주 완료, 정비 중")
+    @Enumerated(EnumType.STRING)
+    private RoomStatus status;
 
     private String mainRoomImgPath;
+    private String mainRoomImgOriginName;
+    private String mainRoomImgSaveName;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
+    private List<RoomImg> roomImg;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
+    private List<RoomOptionConn> roomOptionConn;
 }

@@ -1,22 +1,31 @@
 package com.nanum.houseservice.house.domain;
 
-import com.nanum.houseservice.config.BaseTimeEntity;
-import com.nanum.houseservice.config.Gender;
-import com.nanum.houseservice.config.HouseStatus;
+import com.nanum.config.BaseTimeEntity;
+import com.nanum.config.Gender;
+import com.nanum.config.HouseStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLDeleteAll;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "update house set delete_at=now() where id=?")
+@Where(clause = "delete_at is null")
 public class House extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long houseId;
+    private Long id;
 
     @Column(nullable = false)
     private Long hostId;
@@ -57,9 +66,13 @@ public class House extends BaseTimeEntity {
     private Gender houseGender;
 
     private String mainHouseImgPath;
+    private String mainHouseImgOriginName;
+    private String mainHouseImgSaveName;
 
     @Comment("도면 이미지 경로")
     private String floorPlanPath;
+    private String floorPlanOriginName;
+    private String floorPlanSaveName;
 
     @Comment("검색 키워드")
     private String keyWord;

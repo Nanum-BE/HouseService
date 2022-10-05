@@ -1,6 +1,8 @@
-package com.nanum.houseservice.house.domain;
+package com.nanum.houseservice.option.domain;
 
-import com.nanum.houseservice.config.BaseTimeEntity;
+import com.nanum.config.BaseTimeEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,11 +10,13 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class HouseOption extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long houseOptionId;
+    private Long id;
 
     @Column(nullable = false)
     private String optionName;
