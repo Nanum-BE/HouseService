@@ -23,4 +23,5 @@ public interface HouseService {
     HouseFileResponse retrieveHouseFile(Long hostId, Long houseId);
     List<HouseResponse> retrieveHouseByHouseName(String houseName);
     List<HouseResponse> searchByCondition(HouseSearchDto houseSearchDto);
+    List<String> autoComplete(String searchWord);
 }

@@ -152,4 +152,10 @@ public class HouseController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
+    @GetMapping("/search/{searchWord}")
+    public ResponseEntity<Object> search(@PathVariable String searchWord) {
+        List<String> response = houseService.autoComplete(searchWord);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
 }

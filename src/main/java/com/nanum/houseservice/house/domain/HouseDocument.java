@@ -3,9 +3,7 @@ package com.nanum.houseservice.house.domain;
 import com.nanum.config.Gender;
 import com.nanum.config.HouseStatus;
 import lombok.*;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.*;
 
 import javax.persistence.Id;
 import java.time.LocalDateTime;
@@ -17,6 +15,8 @@ import static org.springframework.data.elasticsearch.annotations.DateFormat.epoc
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Mapping(mappingPath = "house-mapping.json")
+@Setting(settingPath = "house-setting.json")
 @Document(indexName = "house")
 public class HouseDocument {
 
@@ -27,10 +27,10 @@ public class HouseDocument {
     @Field(type = FieldType.Long)
     private Long hostId;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "nori")
     private String streetAddress;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "nori")
     private String lotAddress;
 
     @Field(type = FieldType.Keyword)
@@ -39,7 +39,8 @@ public class HouseDocument {
     @Field(type = FieldType.Text)
     private String explanation;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, store = true,
+            analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String houseName;
 
     @Field(type = FieldType.Keyword)

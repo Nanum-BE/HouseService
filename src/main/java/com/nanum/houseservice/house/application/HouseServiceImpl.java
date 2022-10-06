@@ -275,4 +275,8 @@ public class HouseServiceImpl implements HouseService {
                 .collect(Collectors.toList());
     }
 
+    public List<String> autoComplete(String searchWord) {
+        return houseSearchQueryRepository.findBySearchWord(searchWord);
+    }
+
 }
