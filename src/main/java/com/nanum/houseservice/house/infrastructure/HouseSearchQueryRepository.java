@@ -3,12 +3,16 @@ package com.nanum.houseservice.house.infrastructure;
 import com.nanum.houseservice.house.domain.HouseDocument;
 import com.nanum.houseservice.house.dto.HouseSearchDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -17,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class HouseSearchQueryRepository {
     private final ElasticsearchOperations operations;
 
@@ -30,11 +35,22 @@ public class HouseSearchQueryRepository {
     }
 
     public List<String> findBySearchWord(String searchWord) {
-        CriteriaQuery query = new CriteriaQuery(new Criteria());
-        query.addCriteria(Criteria.where("houseName.jaso").matches(searchWord));
 
-        SearchHits<HouseDocument> search = operations.search(query, HouseDocument.class);
-        return search.stream()
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+                .should(QueryBuilders.matchQuery("houseName.jaso", searchWord))
+                .should(QueryBuilders.matchQuery("houseName.ngram", searchWord));
+
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+        queryBuilder.withQuery(boolQueryBuilder);
+
+        SearchHits<HouseDocument> articles = operations
+                .search(queryBuilder.build(), HouseDocument.class, IndexCoordinates.of("house"));
+
+        for(SearchHit searchHit : articles) {
+            log.info(String.valueOf(searchHit.getScore()));
+        }
+
+        return articles.stream()
                 .map(SearchHit -> SearchHit.getContent().getHouseName())
                 .collect(Collectors.toList());
     }
