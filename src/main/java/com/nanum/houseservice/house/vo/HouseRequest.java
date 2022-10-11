@@ -25,6 +25,10 @@ public class HouseRequest {
     @Schema(description = "지번번 주소", defaultValue = "부산광역시 부산진구 가야동 999-12")
     private String lotAddress;
 
+    @NotNull(message = "detailAddress cannot be null")
+    @Schema(description = "상세 주소", defaultValue = "OO빌라 3~4층")
+    private String detailAddress;
+
     @NotNull(message = "zipCode cannot be null")
     @Schema(description = "우편번호", defaultValue = "99999")
     private String zipCode;

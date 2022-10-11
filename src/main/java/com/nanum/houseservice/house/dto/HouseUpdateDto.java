@@ -17,6 +17,7 @@ public class HouseUpdateDto {
     private Long hostId;
     private String streetAddress;
     private String lotAddress;
+    private String detailAddress;
     private String zipCode;
     private String explanation;
     private String houseName;
@@ -35,6 +36,7 @@ public class HouseUpdateDto {
                 .hostId(hostId)
                 .streetAddress(streetAddress)
                 .lotAddress(lotAddress)
+                .detailAddress(detailAddress)
                 .zipCode(zipCode)
                 .explanation(explanation)
                 .houseName(houseName)

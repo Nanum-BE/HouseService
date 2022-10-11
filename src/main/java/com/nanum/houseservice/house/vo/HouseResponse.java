@@ -26,6 +26,9 @@ public class HouseResponse {
     @Schema(description = "지번 주소")
     private String lotAddress;
 
+    @Schema(description = "상세 주소")
+    private String detailAddress;
+
     @Schema(description = "우편번호")
     private String zipCode;
 

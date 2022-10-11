@@ -38,6 +38,10 @@ public class House extends BaseTimeEntity {
     @Column(nullable = false)
     private String lotAddress;
 
+    @Comment("상세 주소")
+    @Column(nullable = false)
+    private String detailAddress;
+
     @Column(nullable = false)
     private String zipCode;
 
