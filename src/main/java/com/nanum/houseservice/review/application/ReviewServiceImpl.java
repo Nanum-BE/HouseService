@@ -2,6 +2,7 @@ package com.nanum.houseservice.review.application;
 
 import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
+import com.nanum.houseservice.house.vo.HostHouseResponse;
 import com.nanum.houseservice.review.domain.Review;
 import com.nanum.houseservice.review.domain.ReviewImg;
 import com.nanum.houseservice.review.dto.ReviewDto;
@@ -18,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,28 +84,23 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewShortResponse> retrieveHouseReviews(Long houseId) {
-        List<Review> review = reviewRepository.findAllByRoomHouseId(houseId);
-        if(review == null) {
-            throw new NotFoundException("해당 리뷰가 존재하지 않습니다.");
-        }
+    public Page<ReviewShortResponse> retrieveHouseReviews(Long houseId, Pageable pageable) {
+        Page<Review> review = reviewRepository.findAllByRoomHouseId(houseId, pageable);
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        List<ReviewShortResponse> reviewShortResponses = new ArrayList<>();
 
-        for(Review r : review) {
+        return review.map(r -> {
             ReviewImg reviewImg = reviewImgRepository.findTop1ByReviewId(r.getId());
+
             ReviewImgResponse reviewImgResponse = null;
 
             if(reviewImg != null) {
                 reviewImgResponse = mapper.map(reviewImg, ReviewImgResponse.class);
             }
 
-            reviewShortResponses.add(new ReviewShortResponse().entityToReviewShortResponse(r, reviewImgResponse));
-        }
-
-        return reviewShortResponses;
+            return mapper.map(new ReviewShortResponse().entityToReviewShortResponse(r, reviewImgResponse), ReviewShortResponse.class);
+        });
     }
 
     @Override

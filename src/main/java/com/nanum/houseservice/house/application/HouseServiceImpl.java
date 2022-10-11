@@ -5,15 +5,15 @@ import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.domain.HouseFile;
 import com.nanum.houseservice.house.domain.HouseImg;
-import com.nanum.houseservice.house.dto.HouseUpdateDto;
-import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
-import com.nanum.houseservice.house.vo.*;
-import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.house.domain.HouseOptionConn;
 import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.infrastructure.HouseFileRepository;
 import com.nanum.houseservice.house.infrastructure.HouseImgRepository;
+import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
 import com.nanum.houseservice.house.infrastructure.HouseRepository;
+import com.nanum.houseservice.house.vo.*;
+import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -108,9 +110,9 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<HostHouseResponse> retrieveHostAllHouses(Long hostId) {
+    public Page<HostHouseResponse> retrieveHostAllHouses(Long hostId, Pageable pageable) {
 
-        List<House> houses = houseRepository.findAllByHostId(hostId);
+        Page<House> houses = houseRepository.findAllByHostId(hostId, pageable);
 
         if(houses.isEmpty()) {
             throw new NotFoundException(String.format("No Lookup Value"));
@@ -119,7 +121,9 @@ public class HouseServiceImpl implements HouseService {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        return Arrays.asList(mapper.map(houses, HostHouseResponse[].class));
+        return houses.map(house -> {
+            return mapper.map(house, HostHouseResponse.class);
+        });
     }
 
     @Override
