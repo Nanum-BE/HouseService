@@ -51,6 +51,13 @@ public class HouseController {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
+        StringBuilder keyWord = new StringBuilder();
+
+        for(String s : houseRequest.getKeyWord()) {
+            keyWord.append("#").append(s);
+        }
+
+        houseDto.setKeyWord(String.valueOf(keyWord));
 
         if (houseFile == null || houseFile.isEmpty()) {
             throw new NoHouseFileException(String.format("HouseFile Cannot Be Empty"));

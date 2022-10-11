@@ -58,7 +58,7 @@ public class HouseRequest {
     private Gender houseGender;
 
     @Schema(description = "검색 키워드", defaultValue = "#가야역#동의대역#동의대학교")
-    private String keyWord;
+    private List<String> keyWord;
 
     @Schema(description = "하우스 옵션")
     private List<Long> houseOption;
