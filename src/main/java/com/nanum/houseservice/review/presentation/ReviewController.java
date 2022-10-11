@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,9 +59,10 @@ public class ReviewController {
 
     @Operation(summary = "리뷰 목록 조회 API", description = "사용자가 하우스의 리뷰 목록을 조회하는 요청")
     @GetMapping("/houses/{houseId}/reviews")
-    public ResponseEntity<Object> retrieveHouseReviews(@PathVariable Long houseId) {
+    public ResponseEntity<Object> retrieveHouseReviews(@PathVariable Long houseId,
+                                                       Pageable pageable) {
 
-        List<ReviewShortResponse> reviewResponse = reviewService.retrieveHouseReviews(houseId);
+        Page<ReviewShortResponse> reviewResponse = reviewService.retrieveHouseReviews(houseId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(reviewResponse));
     }

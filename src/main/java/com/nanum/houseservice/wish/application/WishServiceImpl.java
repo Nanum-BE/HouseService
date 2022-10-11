@@ -4,6 +4,7 @@ import com.nanum.exception.NotFoundException;
 import com.nanum.exception.OverlapException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.infrastructure.HouseRepository;
+import com.nanum.houseservice.room.vo.RoomResponse;
 import com.nanum.houseservice.wish.domain.Wish;
 import com.nanum.houseservice.wish.dto.WishDto;
 import com.nanum.houseservice.wish.infrastructure.WishRepository;
@@ -11,6 +12,8 @@ import com.nanum.houseservice.wish.vo.WishResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,18 +54,15 @@ public class WishServiceImpl implements WishService{
     }
 
     @Override
-    public List<WishResponse> retrieveWish(Long userId) {
+    public Page<WishResponse> retrieveWish(Long userId, Pageable pageable) {
 
-        List<Wish> wishes = wishRepository.findAllByUserId(userId);
-        List<WishDto> wishDtos = new ArrayList<>();
-
-        if(wishes != null) {
-            wishes.forEach(wish -> wishDtos.add(wish.entityToWishDto()));
-        }
+        Page<Wish> wishes = wishRepository.findAllByUserId(userId, pageable);
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        return Arrays.asList(mapper.map(wishDtos, WishResponse[].class));
+        return wishes.map(wish -> {
+            return mapper.map(wish.entityToWishDto(), WishResponse.class);
+        });
     }
 }

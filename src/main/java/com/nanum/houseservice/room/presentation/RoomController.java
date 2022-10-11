@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,8 +64,9 @@ public class RoomController {
 
     @Operation(summary = "방 목록 조회 API", description = "호스트가 하우스의 방 목록을 조회하는 요청")
     @GetMapping("/houses/{houseId}/rooms")
-    public ResponseEntity<Object> retrieveHostAllRooms(@PathVariable Long houseId) {
-        List<RoomResponse> response = roomService.retrieveHostAllRooms(houseId);
+    public ResponseEntity<Object> retrieveHostAllRooms(@PathVariable Long houseId,
+                                                       Pageable pageable) {
+        Page<RoomResponse> response = roomService.retrieveHostAllRooms(houseId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
