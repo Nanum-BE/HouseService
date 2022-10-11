@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +51,15 @@ public class HouseController {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
+        StringBuilder keyWord = new StringBuilder();
 
-        if(houseFile == null || houseFile.isEmpty()) {
+        for(String s : houseRequest.getKeyWord()) {
+            keyWord.append("#").append(s);
+        }
+
+        houseDto.setKeyWord(String.valueOf(keyWord));
+
+        if (houseFile == null || houseFile.isEmpty()) {
             throw new NoHouseFileException(String.format("HouseFile Cannot Be Empty"));
         }
 
@@ -63,9 +72,10 @@ public class HouseController {
 
     @Operation(summary = "본인 하우스 목록 조회 API", description = "호스트가 본인 하우스 목록을 조회하는 요청")
     @GetMapping("/houses/{hostId}")
-    public ResponseEntity<Object> retrieveHostAllHouses(@PathVariable("hostId") Long hostId) {
+    public ResponseEntity<Object> retrieveHostAllHouses(@PathVariable("hostId") Long hostId,
+                                                        Pageable pageable) {
 
-        List<HostHouseResponse> response = houseService.retrieveHostAllHouses(hostId);
+        Page<HostHouseResponse> response = houseService.retrieveHostAllHouses(hostId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
@@ -103,9 +113,9 @@ public class HouseController {
     @Operation(summary = "하우스 이미지 수정 API", description = "호스트가 본인 하우스 상세 이미지를 수정하는 요청")
     @PutMapping("/houses/{hostId}/{houseId}/image")
     public ResponseEntity<Object> updateHouseImg(@PathVariable("hostId") Long hostId,
-                                              @PathVariable("houseId") Long houseId,
-                                              @RequestPart(required = false) List<Long> deleteHouseImgs,
-                                              @RequestPart(required = false) List<MultipartFile> houseImgs) {
+                                                 @PathVariable("houseId") Long houseId,
+                                                 @RequestPart(required = false) List<Long> deleteHouseImgs,
+                                                 @RequestPart(required = false) List<MultipartFile> houseImgs) {
 
         houseService.updateHouseImg(hostId, houseId, deleteHouseImgs, houseImgs);
         String result = "하우스 이미지 수정이 완료되었습니다.";
@@ -116,10 +126,10 @@ public class HouseController {
     @Operation(summary = "하우스 서류 수정 API", description = "호스트가 본인 하우스 서류를 수정하는 요청")
     @PutMapping("/houses/{hostId}/{houseId}/file")
     public ResponseEntity<Object> updateHouseFile(@PathVariable("hostId") Long hostId,
-                                                 @PathVariable("houseId") Long houseId,
-                                                 @RequestPart(required = false) MultipartFile houseFile) {
+                                                  @PathVariable("houseId") Long houseId,
+                                                  @RequestPart(required = false) MultipartFile houseFile) {
 
-        if(houseFile == null || houseFile.isEmpty()) {
+        if (houseFile == null || houseFile.isEmpty()) {
             throw new NoHouseFileException(String.format("HouseFile Cannot Be Empty"));
         }
 

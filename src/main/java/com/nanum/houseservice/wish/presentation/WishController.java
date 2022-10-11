@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,8 +65,9 @@ public class WishController {
 
     @Operation(summary = "좋아요 조회 API", description = "사용자가 좋아요 목록을 조회하는 요청")
     @GetMapping("/users/{userId}/wishes")
-    public ResponseEntity<Object> retrieveWish(@PathVariable Long userId) {
-        List<WishResponse> wishResponses = wishService.retrieveWish(userId);
+    public ResponseEntity<Object> retrieveWish(@PathVariable Long userId,
+                                               Pageable pageable) {
+        Page<WishResponse> wishResponses = wishService.retrieveWish(userId, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(wishResponses));
     }
 }

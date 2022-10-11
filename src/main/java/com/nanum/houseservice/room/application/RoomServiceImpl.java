@@ -5,6 +5,7 @@ import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.infrastructure.HouseRepository;
+import com.nanum.houseservice.house.vo.HostHouseResponse;
 import com.nanum.houseservice.option.domain.RoomOption;
 import com.nanum.houseservice.option.infrastructure.RoomOptionRepository;
 import com.nanum.houseservice.room.domain.Room;
@@ -25,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,9 +104,9 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomResponse> retrieveHostAllRooms(Long houseId) {
+    public Page<RoomResponse> retrieveHostAllRooms(Long houseId, Pageable pageable) {
 
-        List<Room> rooms = roomRepository.findAllByHouseId(houseId);
+        Page<Room> rooms = roomRepository.findAllByHouseId(houseId, pageable);
 
         if(rooms.isEmpty()) {
             throw new NotFoundException(String.format("No Lookup Value"));
@@ -112,7 +115,9 @@ public class RoomServiceImpl implements RoomService {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        return Arrays.asList(mapper.map(rooms, RoomResponse[].class));
+        return rooms.map(room -> {
+            return mapper.map(room, RoomResponse.class);
+        });
     }
 
     @Override
