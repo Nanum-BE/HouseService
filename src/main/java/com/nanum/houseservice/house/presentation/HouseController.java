@@ -89,6 +89,16 @@ public class HouseController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
+    @Operation(summary = "기존 하우스 정보 조회 API", description = "호스트가 하우스 수정을 위해 기존 정보를 조회하는 요청")
+    @GetMapping("/houses/{hostId}/origin/{houseId}")
+    public ResponseEntity<Object> retrieveOriginHouse(@PathVariable("hostId") Long hostId,
+                                                    @PathVariable("houseId") Long houseId) {
+
+        HouseOriginResponse response = houseService.retrieveOriginHouse(hostId, houseId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
     @Operation(summary = "하우스 수정 API", description = "호스트가 본인 하우스 정보 및 하우스 옵션을 수정하는 요청")
     @PutMapping("/houses/{hostId}/{houseId}")
     public ResponseEntity<Object> updateHouse(@PathVariable("hostId") Long hostId,
