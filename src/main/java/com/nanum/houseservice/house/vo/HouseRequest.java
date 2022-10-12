@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseRequest {
@@ -57,7 +59,7 @@ public class HouseRequest {
     @Schema(description = "하우스 성별", defaultValue = "MALE")
     private Gender houseGender;
 
-    @Schema(description = "검색 키워드", defaultValue = "#가야역#동의대역#동의대학교")
+    @Schema(description = "검색 키워드", defaultValue = "가야역")
     private List<String> keyWord;
 
     @Schema(description = "하우스 옵션")

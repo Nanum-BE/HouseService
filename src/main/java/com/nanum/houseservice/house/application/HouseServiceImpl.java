@@ -152,6 +152,37 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public HouseOriginResponse retrieveOriginHouse(Long hostId, Long houseId) {
+        House house = houseRepository.findById(houseId).get();
+        List<HouseImg> houseImgs = houseImgRepository.findAllByHouseId(houseId);
+        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        HouseRequest houseRequest = mapper.map(house, HouseRequest.class);
+
+        List<HouseImgResponse> houseImgResponses = Arrays.asList(mapper.map(houseImgs, HouseImgResponse[].class));
+
+        List<Long> houseOption = new ArrayList<>();
+        houseOptionConns.forEach(h -> houseOption.add(h.getId()));
+
+        List<String> keyWord = new ArrayList<>(List.of(house.getKeyWord().split("#")));
+        if(keyWord.size() > 1) keyWord.remove(0);
+
+        houseRequest.setKeyWord(keyWord);
+        houseRequest.setHouseOption(houseOption);
+
+        HouseFile houseFile = houseFileRepository.findByHouseId(houseId);
+
+        return new HouseOriginResponse(houseRequest,
+                house.getMainHouseImgPath(),
+                house.getFloorPlanPath(),
+                houseFile.getFilePath(),
+                houseImgResponses);
+    }
+
+    @Override
     public void updateHouse(Long houseId, HouseDto houseDto,
                             MultipartFile houseMainImg, MultipartFile floorPlanImg) {
 
