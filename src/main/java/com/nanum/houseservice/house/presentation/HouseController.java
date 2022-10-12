@@ -93,14 +93,14 @@ public class HouseController {
     @PutMapping("/houses/{hostId}/{houseId}")
     public ResponseEntity<Object> updateHouse(@PathVariable("hostId") Long hostId,
                                               @PathVariable("houseId") Long houseId,
-                                              @Valid @RequestPart HouseUpdateRequest houseUpdateRequest,
+                                              @Valid @RequestPart HouseUpdateRequest houseRequest,
                                               @RequestPart(value = "houseMainImg", required = false) MultipartFile houseMainImg,
                                               @RequestPart(value = "floorPlanImg", required = false) MultipartFile floorPlanImg) {
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        HouseDto houseDto = mapper.map(houseUpdateRequest, HouseDto.class);
+        HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
         houseDto.setHostId(hostId);
 
         houseService.updateHouse(houseId, houseDto, houseMainImg, floorPlanImg);
