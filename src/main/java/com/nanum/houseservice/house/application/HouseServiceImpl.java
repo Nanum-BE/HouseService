@@ -160,7 +160,8 @@ public class HouseServiceImpl implements HouseService {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        HouseOriginResponse houseResponse = mapper.map(house, HouseOriginResponse.class);
+        HouseRequest houseRequest = mapper.map(house, HouseRequest.class);
+
         List<HouseImgResponse> houseImgResponses = Arrays.asList(mapper.map(houseImgs, HouseImgResponse[].class));
 
         List<Long> houseOption = new ArrayList<>();
@@ -169,11 +170,16 @@ public class HouseServiceImpl implements HouseService {
         List<String> keyWord = new ArrayList<>(List.of(house.getKeyWord().split("#")));
         if(keyWord.size() > 1) keyWord.remove(0);
 
-        houseResponse.setKeyWord(keyWord);
-        houseResponse.setHouseImgs(houseImgResponses);
-        houseResponse.setHouseOption(houseOption);
+        houseRequest.setKeyWord(keyWord);
+        houseRequest.setHouseOption(houseOption);
 
-        return houseResponse;
+        HouseFile houseFile = houseFileRepository.findByHouseId(houseId);
+
+        return new HouseOriginResponse(houseRequest,
+                house.getMainHouseImgPath(),
+                house.getFloorPlanPath(),
+                houseFile.getFilePath(),
+                houseImgResponses);
     }
 
     @Override
