@@ -49,4 +49,24 @@ public class RoomDto {
                 .mainRoomImgSaveName(roomMainImgDto.getSaveName())
                 .build();
     }
+
+    public Room updateRoomDtoToEntity(House house, S3UploadDto roomMainImgDto, Long roomId) {
+        return Room.builder()
+                .id(roomId)
+                .house(house)
+                .roomGender(roomGender)
+                .area(area)
+                .name(name)
+                .totalMember(totalMember)
+                .deposit(deposit)
+                .monthlyRent(monthlyRent)
+                .maintenanceFee(maintenanceFee)
+                .prepaidUtilityBill(prepaidUtilityBill)
+                .contractEndAt(contractEndAt)
+                .status(status)
+                .mainRoomImgPath(roomMainImgDto.getImgUrl())
+                .mainRoomImgOriginName(roomMainImgDto.getOriginName())
+                .mainRoomImgSaveName(roomMainImgDto.getSaveName())
+                .build();
+    }
 }

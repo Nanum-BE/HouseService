@@ -5,14 +5,12 @@ import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.infrastructure.HouseRepository;
-import com.nanum.houseservice.house.vo.HostHouseResponse;
 import com.nanum.houseservice.option.domain.RoomOption;
 import com.nanum.houseservice.option.infrastructure.RoomOptionRepository;
 import com.nanum.houseservice.room.domain.Room;
 import com.nanum.houseservice.room.domain.RoomImg;
 import com.nanum.houseservice.room.domain.RoomOptionConn;
 import com.nanum.houseservice.room.dto.RoomDto;
-import com.nanum.houseservice.room.dto.RoomUpdateDto;
 import com.nanum.houseservice.room.infrastructure.RoomImgRepository;
 import com.nanum.houseservice.room.infrastructure.RoomOptionConnRepository;
 import com.nanum.houseservice.room.infrastructure.RoomRepository;
@@ -149,7 +147,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void updateRoom(Long houseId, Long roomId,
-                           RoomUpdateDto roomDto, MultipartFile roomMainImg) {
+                           RoomDto roomDto, MultipartFile roomMainImg) {
 
         Room room = roomRepository.findById(roomId).get();
         roomDto.setStatus(room.getStatus());
@@ -168,30 +166,30 @@ public class RoomServiceImpl implements RoomService {
                         .build();
             }
         } catch (Exception e) {
-            throw new CustomRunTimeException("Server Error");
+            throw new CustomRunTimeException("이미지 추가 에러");
         }
 
         Room newRoom = roomDto.updateRoomDtoToEntity(room.getHouse(), roomMainImgDto, roomId);
         roomRepository.save(newRoom);
 
         try {
-            if(roomDto.getDeleteRoomOption().size() > 0) {
-                List<Long> deleteRoomOptions = roomDto.getDeleteRoomOption();
-                roomOptionConnRepository.deleteAllById(deleteRoomOptions);
-            }
-            if(roomDto.getCreateRoomOption().size() > 0) {
-                for (Long roomOptionId : roomDto.getCreateRoomOption()) {
-                    RoomOption roomOption = roomOptionRepository.findById(roomOptionId).orElse(null);
-                    RoomOptionConn roomOptionConn = RoomOptionConn.builder()
-                            .room(room)
-                            .roomOption(roomOption)
-                            .build();
-                    roomOptionConnRepository.save(roomOptionConn);
-                }
+            List<RoomOptionConn> roomOptionConns = roomOptionConnRepository.findAllByRoomId(roomId);
+            roomOptionConnRepository.deleteAll(roomOptionConns);
+
+            if(roomDto.getRoomOption().size() > 0) {
+                List<RoomOption> roomOptions = roomOptionRepository.findAllById(roomDto.getRoomOption());
+                List<RoomOptionConn> roomOptionConnList = new ArrayList<>();
+
+                roomOptions.forEach(roomOption -> roomOptionConnList.add(
+                        RoomOptionConn.builder()
+                                .room(room)
+                                .roomOption(roomOption)
+                                .build()
+                ));
+                roomOptionConnRepository.saveAll(roomOptionConnList);
             }
         } catch (Exception e) {
-            log.info("기존 방 옵션 유지");
-            throw new CustomRunTimeException("Server Error");
+            throw new CustomRunTimeException("옵션 변경 에러");
         }
     }
 

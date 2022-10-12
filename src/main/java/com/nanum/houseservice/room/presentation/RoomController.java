@@ -4,11 +4,9 @@ import com.nanum.config.BaseResponse;
 import com.nanum.exception.ExceptionResponse;
 import com.nanum.houseservice.room.application.RoomService;
 import com.nanum.houseservice.room.dto.RoomDto;
-import com.nanum.houseservice.room.dto.RoomUpdateDto;
 import com.nanum.houseservice.room.vo.HostRoomResponse;
 import com.nanum.houseservice.room.vo.RoomRequest;
 import com.nanum.houseservice.room.vo.RoomResponse;
-import com.nanum.houseservice.room.vo.RoomUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -83,12 +81,12 @@ public class RoomController {
     @PutMapping("/houses/{houseId}/rooms/{roomId}")
     public ResponseEntity<Object> updateRoom(@PathVariable Long houseId,
                                              @PathVariable Long roomId,
-                                             @Valid @RequestPart RoomUpdateRequest roomRequest,
+                                             @Valid @RequestPart RoomRequest roomRequest,
                                              @RequestPart(value = "roomMainImg", required = false) MultipartFile roomMainImg) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        RoomUpdateDto roomUpdateDto = mapper.map(roomRequest, RoomUpdateDto.class);
+        RoomDto roomUpdateDto = mapper.map(roomRequest, RoomDto.class);
 
         roomService.updateRoom(houseId, roomId, roomUpdateDto, roomMainImg);
         String result = "방 수정이 완료되었습니다.";

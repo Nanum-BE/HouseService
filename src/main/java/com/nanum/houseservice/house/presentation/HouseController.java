@@ -5,7 +5,6 @@ import com.nanum.exception.ExceptionResponse;
 import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
-import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -101,10 +100,10 @@ public class HouseController {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        HouseUpdateDto houseUpdateDto = mapper.map(houseUpdateRequest, HouseUpdateDto.class);
-        houseUpdateDto.setHostId(hostId);
+        HouseDto houseDto = mapper.map(houseUpdateRequest, HouseDto.class);
+        houseDto.setHostId(hostId);
 
-        houseService.updateHouse(houseId, houseUpdateDto, houseMainImg, floorPlanImg);
+        houseService.updateHouse(houseId, houseDto, houseMainImg, floorPlanImg);
         String result = "하우스 수정이 완료되었습니다.";
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
