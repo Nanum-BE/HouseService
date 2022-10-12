@@ -7,7 +7,6 @@ import com.nanum.houseservice.house.domain.HouseFile;
 import com.nanum.houseservice.house.domain.HouseImg;
 import com.nanum.houseservice.house.domain.HouseOptionConn;
 import com.nanum.houseservice.house.dto.HouseDto;
-import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.infrastructure.HouseFileRepository;
 import com.nanum.houseservice.house.infrastructure.HouseImgRepository;
 import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
@@ -152,11 +151,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public void updateHouse(Long houseId, HouseUpdateDto houseUpdateDto,
+    public void updateHouse(Long houseId, HouseDto houseDto,
                             MultipartFile houseMainImg, MultipartFile floorPlanImg) {
 
         House house = houseRepository.findById(houseId).get();
-        houseUpdateDto.setStatus(house.getStatus());
+        houseDto.setStatus(house.getStatus());
 
         S3UploadDto houseMainImgDto;
         S3UploadDto floorPlanImgDto;
@@ -184,23 +183,22 @@ public class HouseServiceImpl implements HouseService {
             throw new RuntimeException(e);
         }
 
-        House newHouse = houseUpdateDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, houseId);
+        House newHouse = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, houseId);
         houseRepository.save(newHouse);
 
         try {
-            if(houseUpdateDto.getDeleteHouseOption().size() > 0) {
-                List<Long> deleteHouseOptions = houseUpdateDto.getDeleteHouseOption();
-                houseOptionConnRepository.deleteAllById(deleteHouseOptions);
-            }
-            if(houseUpdateDto.getCreateHouseOption().size() > 0) {
-                for (Long houseOptionId : houseUpdateDto.getCreateHouseOption()) {
-                    HouseOption houseOption = houseOptionRepository.findById(houseOptionId).orElse(null);
-                    HouseOptionConn houseOptionConn = HouseOptionConn.builder()
-                            .house(house)
-                            .houseOption(houseOption)
-                            .build();
-                    houseOptionConnRepository.save(houseOptionConn);
-                }
+            List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
+
+            houseOptionConnRepository.deleteAll(houseOptionConns);
+
+            if(houseDto.getHouseOption().size() > 0) {
+                List<HouseOption> houseOptions = houseOptionRepository.findAllById(houseDto.getHouseOption());
+                List<HouseOptionConn> houseOptionConnList = new ArrayList<>();
+                houseOptions.forEach(houseOption -> houseOptionConnList.add(HouseOptionConn.builder()
+                        .house(house)
+                        .houseOption(houseOption)
+                        .build()));
+                houseOptionConnRepository.saveAll(houseOptionConnList);
             }
         } catch (Exception e) {
             log.info("기존 하우스 옵션 유지");

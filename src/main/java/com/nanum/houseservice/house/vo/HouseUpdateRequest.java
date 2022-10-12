@@ -56,9 +56,6 @@ public class HouseUpdateRequest {
     @Schema(description = "검색 키워드", defaultValue = "#수정")
     private String keyWord;
 
-    @Schema(description = "삭제할 하우스 옵션")
-    private List<Long> deleteHouseOption;
-
-    @Schema(description = "추가할 하우스 옵션")
-    private List<Long> createHouseOption;
+    @Schema(description = "하우스 옵션")
+    private List<Long> houseOption;
 }

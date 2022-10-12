@@ -1,7 +1,6 @@
 package com.nanum.houseservice.house.application;
 
 import com.nanum.houseservice.house.dto.HouseDto;
-import com.nanum.houseservice.house.dto.HouseUpdateDto;
 import com.nanum.houseservice.house.vo.HostHouseResponse;
 import com.nanum.houseservice.house.vo.HouseFileResponse;
 import com.nanum.houseservice.house.vo.HouseResponse;
@@ -18,7 +17,7 @@ public interface HouseService {
 
     Page<HostHouseResponse> retrieveHostAllHouses(Long hostId, Pageable pageable);
     HouseResponse retrieveHostHouse(Long hostId, Long houseId);
-    void updateHouse(Long houseId, HouseUpdateDto houseUpdateDto, MultipartFile houseMainImg, MultipartFile floorPlanImg);
+    void updateHouse(Long houseId, HouseDto houseDto, MultipartFile houseMainImg, MultipartFile floorPlanImg);
     void updateHouseImg(Long hostId, Long houseId, List<Long> deleteHouseImgs, List<MultipartFile> houseImgs);
     void updateHouseFile(Long hostId, Long houseId, MultipartFile houseFile);
     HouseFileResponse retrieveHouseFile(Long hostId, Long houseId);
