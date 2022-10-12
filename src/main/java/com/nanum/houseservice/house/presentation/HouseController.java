@@ -104,7 +104,7 @@ public class HouseController {
         houseDto.setHostId(hostId);
 
         houseService.updateHouse(houseId, houseDto, houseMainImg, floorPlanImg);
-        String result = "하우스 수정이 완료되었습니다.";
+        String result = "하우스 정보 수정이 완료되었습니다.";
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(result));
     }
