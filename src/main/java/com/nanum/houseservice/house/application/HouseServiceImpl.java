@@ -1,6 +1,7 @@
 package com.nanum.houseservice.house.application;
 
 import com.nanum.config.HouseStatus;
+import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.House;
 import com.nanum.houseservice.house.domain.HouseFile;
@@ -201,7 +202,7 @@ public class HouseServiceImpl implements HouseService {
                 houseOptionConnRepository.saveAll(houseOptionConnList);
             }
         } catch (Exception e) {
-            log.info("기존 하우스 옵션 유지");
+            throw new CustomRunTimeException("옵션 변경 에러");
         }
 
     }
