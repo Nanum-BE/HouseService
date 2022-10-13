@@ -6,10 +6,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication(scanBasePackages = "com.nanum")
 @EnableDiscoveryClient
@@ -22,19 +20,16 @@ public class HouseServiceApplication {
 	}
 
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		corsConfiguration.addAllowedHeader("*");
-		corsConfiguration.addAllowedOriginPattern("*");
-		corsConfiguration.addAllowedMethod("*");
-		corsConfiguration.setAllowCredentials(true);
-		source.registerCorsConfiguration("/**", corsConfiguration);
-		return source;
-	}
-
-	@Bean
-	public CorsWebFilter corsWebFilter() {
-		return new CorsWebFilter(corsConfigurationSource());
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOriginPatterns("*")
+						.allowedHeaders("*")
+						.allowedMethods("*")
+						.allowCredentials(true);
+			}
+		};
 	}
 }
