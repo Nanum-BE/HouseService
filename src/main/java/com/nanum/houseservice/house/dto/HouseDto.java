@@ -4,6 +4,7 @@ import com.nanum.config.Gender;
 import com.nanum.config.HouseStatus;
 import com.nanum.houseservice.house.domain.House;
 
+import com.nanum.houseservice.option.vo.HouseOptionCheckResponse;
 import com.nanum.util.s3.S3UploadDto;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class HouseDto {
     private Gender houseGender;
     private String keyWord;
     private HouseStatus status;
-    private List<Long> houseOption;
+    private List<HouseOptionCheckResponse> houseOption;
 
     public House houseDtoToEntity(S3UploadDto mainImgUrl, S3UploadDto floorPlanImgUrl, Long houseId) {
         return House.builder()
