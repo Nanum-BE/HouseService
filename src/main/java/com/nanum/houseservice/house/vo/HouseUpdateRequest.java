@@ -53,8 +53,8 @@ public class HouseUpdateRequest {
     @Schema(description = "하우스 성별", defaultValue = "MALE")
     private Gender houseGender;
 
-    @Schema(description = "검색 키워드", defaultValue = "#수정")
-    private String keyWord;
+    @Schema(description = "검색 키워드", defaultValue = "가야역")
+    private List<String> keyWord;
 
     @Schema(description = "하우스 옵션")
     private List<Long> houseOption;
