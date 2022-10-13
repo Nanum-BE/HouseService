@@ -113,6 +113,14 @@ public class HouseController {
         HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
         houseDto.setHostId(hostId);
 
+        StringBuilder keyWord = new StringBuilder();
+
+        for(String s : houseRequest.getKeyWord()) {
+            keyWord.append("#").append(s);
+        }
+
+        houseDto.setKeyWord(String.valueOf(keyWord));
+
         houseService.updateHouse(houseId, houseDto, houseMainImg, floorPlanImg);
         String result = "하우스 정보 수정이 완료되었습니다.";
 
