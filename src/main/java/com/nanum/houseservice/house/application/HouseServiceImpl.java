@@ -73,14 +73,18 @@ public class HouseServiceImpl implements HouseService {
         /** 하우스 옵션을 house_conn 테이블에 Insert **/
         if (houseDto.getHouseOption() != null) {
             try {
-                for (Long houseOptionId : houseDto.getHouseOption()) {
-                    HouseOption houseOption = houseOptionRepository.findById(houseOptionId).orElse(null);
-                    HouseOptionConn houseOptionConn = HouseOptionConn.builder()
-                            .house(house)
+                House finalHouse = house;
+
+                houseDto.getHouseOption().forEach(h -> {
+                    if(h.getIsChecked()) {
+                        HouseOption houseOption = houseOptionRepository.findById(h.getHouseOptionId()).orElse(null);
+                        HouseOptionConn houseOptionConn = HouseOptionConn.builder()
+                            .house(finalHouse)
                             .houseOption(houseOption)
                             .build();
-                    houseOptionConnRepository.save(houseOptionConn);
-                }
+                        houseOptionConnRepository.save(houseOptionConn);
+                    }
+                });
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -240,13 +244,16 @@ public class HouseServiceImpl implements HouseService {
             houseOptionConnRepository.deleteAll(houseOptionConns);
 
             if (houseDto.getHouseOption().size() > 0) {
-                List<HouseOption> houseOptions = houseOptionRepository.findAllById(houseDto.getHouseOption());
-                List<HouseOptionConn> houseOptionConnList = new ArrayList<>();
-                houseOptions.forEach(houseOption -> houseOptionConnList.add(HouseOptionConn.builder()
-                        .house(house)
-                        .houseOption(houseOption)
-                        .build()));
-                houseOptionConnRepository.saveAll(houseOptionConnList);
+                houseDto.getHouseOption().forEach(h -> {
+                    if(h.getIsChecked()) {
+                        HouseOption houseOption = houseOptionRepository.findById(h.getHouseOptionId()).orElse(null);
+                        HouseOptionConn houseOptionConn = HouseOptionConn.builder()
+                                .house(house)
+                                .houseOption(houseOption)
+                                .build();
+                        houseOptionConnRepository.save(houseOptionConn);
+                    }
+                });
             }
         } catch (Exception e) {
             throw new CustomRunTimeException("옵션 변경 에러");

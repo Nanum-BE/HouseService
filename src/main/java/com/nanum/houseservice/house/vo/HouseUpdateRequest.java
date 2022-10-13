@@ -1,6 +1,7 @@
 package com.nanum.houseservice.house.vo;
 
 import com.nanum.config.Gender;
+import com.nanum.houseservice.option.vo.HouseOptionCheckResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -57,5 +58,5 @@ public class HouseUpdateRequest {
     private List<String> keyWord;
 
     @Schema(description = "하우스 옵션")
-    private List<Long> houseOption;
+    private List<HouseOptionCheckResponse> houseOption;
 }
