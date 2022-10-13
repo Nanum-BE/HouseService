@@ -165,7 +165,7 @@ public class HouseServiceImpl implements HouseService {
         List<HouseImgResponse> houseImgResponses = Arrays.asList(mapper.map(houseImgs, HouseImgResponse[].class));
 
         List<Long> houseOption = new ArrayList<>();
-        houseOptionConns.forEach(h -> houseOption.add(h.getId()));
+        houseOptionConns.forEach(h -> houseOption.add(h.getHouseOption().getId()));
 
         List<String> keyWord = new ArrayList<>(List.of(house.getKeyWord().split("#")));
         if(keyWord.size() > 1) keyWord.remove(0);
@@ -235,7 +235,6 @@ public class HouseServiceImpl implements HouseService {
         } catch (Exception e) {
             throw new CustomRunTimeException("옵션 변경 에러");
         }
-
     }
 
     @Override
