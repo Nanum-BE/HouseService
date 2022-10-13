@@ -41,7 +41,7 @@ public class HouseController {
 
     @Operation(summary = "하우스 등록 API", description = "호스트가 하우스를 등록하는 요청")
     @PostMapping("/houses")
-    public ResponseEntity<Object> createHouse(@Valid @RequestPart HousePostRequest houseRequest,
+    public ResponseEntity<Object> createHouse(@Valid @RequestPart HouseRequest houseRequest,
                                               @RequestPart(value = "houseMainImg", required = false) MultipartFile houseMainImg,
                                               @RequestPart(value = "floorPlanImg", required = false) MultipartFile floorPlanImg,
                                               @RequestPart(value = "houseFile", required = false) MultipartFile houseFile,
