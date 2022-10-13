@@ -15,6 +15,7 @@ import com.nanum.houseservice.house.infrastructure.HouseRepository;
 import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
+import com.nanum.houseservice.option.vo.HouseOptionCheckResponse;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
 import lombok.RequiredArgsConstructor;
@@ -50,16 +51,16 @@ public class HouseServiceImpl implements HouseService {
         House house;
 
         /** 1. 하우스 메인 사진 S3에 저장
-            2. 도면 사진 S3에 저장
-            3. 하우스 기본 정보 + 하우스 메인 사진 정보 + 도면 사진 정보를 house 테이블에 Insert **/
+         2. 도면 사진 S3에 저장
+         3. 하우스 기본 정보 + 하우스 메인 사진 정보 + 도면 사진 정보를 house 테이블에 Insert **/
         try {
             S3UploadDto houseMainImgDto = new S3UploadDto();
             S3UploadDto floorPlanImgDto = new S3UploadDto();
 
-            if(houseMainImg != null && !houseMainImg.isEmpty()) {
+            if (houseMainImg != null && !houseMainImg.isEmpty()) {
                 houseMainImgDto = s3UploaderService.upload(List.of(houseMainImg), "houseMain").get(0);
             }
-            if(floorPlanImg != null && !floorPlanImg.isEmpty()) {
+            if (floorPlanImg != null && !floorPlanImg.isEmpty()) {
                 floorPlanImgDto = s3UploaderService.upload(List.of(floorPlanImg), "floorPlan").get(0);
             }
 
@@ -70,7 +71,7 @@ public class HouseServiceImpl implements HouseService {
         }
 
         /** 하우스 옵션을 house_conn 테이블에 Insert **/
-        if(houseDto.getHouseOption() != null) {
+        if (houseDto.getHouseOption() != null) {
             try {
                 for (Long houseOptionId : houseDto.getHouseOption()) {
                     HouseOption houseOption = houseOptionRepository.findById(houseOptionId).orElse(null);
@@ -86,15 +87,15 @@ public class HouseServiceImpl implements HouseService {
         }
 
         /** 1. 하우스 서류, 하우스 상세 사진(리스트)을 S3에 저장
-            2. 하우스 서류, 하우스 상세 사진 정보를 house_img 테이블에 Insert **/
+         2. 하우스 서류, 하우스 상세 사진 정보를 house_img 테이블에 Insert **/
         try {
-            if(houseFile != null && !houseFile.isEmpty()) {
+            if (houseFile != null && !houseFile.isEmpty()) {
                 S3UploadDto houseFileDto = s3UploaderService.upload(List.of(houseFile), "houseFile").get(0);
                 houseFileRepository.save(houseFileDto.houseFileToEntity(house));
             }
 
             List<S3UploadDto> houseImgsDto = new ArrayList<>();
-            if(houseImgs != null && !houseImgs.isEmpty() && !houseImgs.get(0).isEmpty()) {
+            if (houseImgs != null && !houseImgs.isEmpty() && !houseImgs.get(0).isEmpty()) {
                 houseImgsDto = s3UploaderService.upload(houseImgs, "house");
             }
 
@@ -114,7 +115,7 @@ public class HouseServiceImpl implements HouseService {
 
         Page<House> houses = houseRepository.findAllByHostId(hostId, pageable);
 
-        if(houses.isEmpty()) {
+        if (houses.isEmpty()) {
             throw new NotFoundException(String.format("No Lookup Value"));
         }
 
@@ -140,9 +141,9 @@ public class HouseServiceImpl implements HouseService {
         List<HouseOptionConnResponse> houseOptionConnResponses = new ArrayList<>();
 
         houseOptionConns.forEach(h -> houseOptionConnResponses.add(HouseOptionConnResponse.builder()
-                        .id(h.getId())
-                        .optionName(h.getHouseOption().getOptionName())
-                        .iconPath(h.getHouseOption().getIconPath())
+                .id(h.getId())
+                .optionName(h.getHouseOption().getOptionName())
+                .iconPath(h.getHouseOption().getIconPath())
                 .build()));
 
         houseResponse.setHouseImgs(houseImgResponses);
@@ -155,7 +156,6 @@ public class HouseServiceImpl implements HouseService {
     public HouseOriginResponse retrieveOriginHouse(Long hostId, Long houseId) {
         House house = houseRepository.findById(houseId).get();
         List<HouseImg> houseImgs = houseImgRepository.findAllByHouseId(houseId);
-        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -164,11 +164,27 @@ public class HouseServiceImpl implements HouseService {
 
         List<HouseImgResponse> houseImgResponses = Arrays.asList(mapper.map(houseImgs, HouseImgResponse[].class));
 
-        List<Long> houseOption = new ArrayList<>();
-        houseOptionConns.forEach(h -> houseOption.add(h.getHouseOption().getId()));
+        List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
+        List<Long> houseOptionIds = new ArrayList<>();
+
+        houseOptionConns.forEach(houseOptionConn -> houseOptionIds.add(houseOptionConn.getHouseOption().getId()));
+
+        List<HouseOption> houseOptionList = houseOptionRepository.findAll();
+        List<HouseOptionCheckResponse> houseOption = new ArrayList<>();
+
+        houseOptionList.forEach(h -> {
+            boolean isChecked = houseOptionIds.contains(h.getId());
+            houseOption.add(HouseOptionCheckResponse.builder()
+                        .houseOptionId(h.getId())
+                        .optionName(h.getOptionName())
+                        .isChecked(isChecked)
+                        .iconPath(h.getIconPath())
+                        .build());
+            }
+        );
 
         List<String> keyWord = new ArrayList<>(List.of(house.getKeyWord().split("#")));
-        if(keyWord.size() > 1) keyWord.remove(0);
+        if (keyWord.size() > 1) keyWord.remove(0);
 
         houseRequest.setKeyWord(keyWord);
         houseRequest.setHouseOption(houseOption);
@@ -193,7 +209,7 @@ public class HouseServiceImpl implements HouseService {
         S3UploadDto floorPlanImgDto;
 
         try {
-            if(houseMainImg != null && !houseMainImg.isEmpty()) {
+            if (houseMainImg != null && !houseMainImg.isEmpty()) {
                 houseMainImgDto = s3UploaderService.upload(List.of(houseMainImg), "houseMain").get(0);
             } else {
                 houseMainImgDto = S3UploadDto.builder()
@@ -202,7 +218,7 @@ public class HouseServiceImpl implements HouseService {
                         .imgUrl(house.getMainHouseImgPath())
                         .build();
             }
-            if(floorPlanImg != null && !floorPlanImg.isEmpty()) {
+            if (floorPlanImg != null && !floorPlanImg.isEmpty()) {
                 floorPlanImgDto = s3UploaderService.upload(List.of(floorPlanImg), "floorPlan").get(0);
             } else {
                 floorPlanImgDto = S3UploadDto.builder()
@@ -223,7 +239,7 @@ public class HouseServiceImpl implements HouseService {
 
             houseOptionConnRepository.deleteAll(houseOptionConns);
 
-            if(houseDto.getHouseOption().size() > 0) {
+            if (houseDto.getHouseOption().size() > 0) {
                 List<HouseOption> houseOptions = houseOptionRepository.findAllById(houseDto.getHouseOption());
                 List<HouseOptionConn> houseOptionConnList = new ArrayList<>();
                 houseOptions.forEach(houseOption -> houseOptionConnList.add(HouseOptionConn.builder()
@@ -239,14 +255,14 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public void updateHouseImg(Long hostId, Long houseId, List<Long> deleteHouseImgs, List<MultipartFile> houseImgs) {
-        if(deleteHouseImgs != null && !deleteHouseImgs.isEmpty()) {
+        if (deleteHouseImgs != null && !deleteHouseImgs.isEmpty()) {
             houseImgRepository.deleteAllById(deleteHouseImgs);
         }
 
         List<S3UploadDto> houseImgsDto = new ArrayList<>();
 
         try {
-            if(houseImgs != null && !houseImgs.isEmpty() && !houseImgs.get(0).isEmpty()) {
+            if (houseImgs != null && !houseImgs.isEmpty() && !houseImgs.get(0).isEmpty()) {
                 houseImgsDto = s3UploaderService.upload(houseImgs, "house");
             }
         } catch (Exception e) {
@@ -270,7 +286,7 @@ public class HouseServiceImpl implements HouseService {
         houseFileRepository.delete(originHouseFile);
 
         try {
-            if(houseFile != null && !houseFile.isEmpty()) {
+            if (houseFile != null && !houseFile.isEmpty()) {
                 S3UploadDto houseFileDto = s3UploaderService.upload(List.of(houseFile), "houseFile").get(0);
                 houseFileRepository.save(houseFileDto.houseFileToEntity(house));
             }
@@ -283,7 +299,7 @@ public class HouseServiceImpl implements HouseService {
     public HouseFileResponse retrieveHouseFile(Long hostId, Long houseId) {
         HouseFile houseFile = houseFileRepository.findByHouseId(houseId);
 
-        if(houseFile == null) {
+        if (houseFile == null) {
             throw new NotFoundException(String.format("No Lookup Value"));
         }
 
