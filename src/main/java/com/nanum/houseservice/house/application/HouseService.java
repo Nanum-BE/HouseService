@@ -1,10 +1,7 @@
 package com.nanum.houseservice.house.application;
 
 import com.nanum.houseservice.house.dto.HouseDto;
-import com.nanum.houseservice.house.vo.HostHouseResponse;
-import com.nanum.houseservice.house.vo.HouseFileResponse;
-import com.nanum.houseservice.house.vo.HouseOriginResponse;
-import com.nanum.houseservice.house.vo.HouseResponse;
+import com.nanum.houseservice.house.vo.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,4 +20,5 @@ public interface HouseService {
     void updateHouseImg(Long hostId, Long houseId, List<Long> deleteHouseImgs, List<MultipartFile> houseImgs);
     void updateHouseFile(Long hostId, Long houseId, MultipartFile houseFile);
     HouseFileResponse retrieveHouseFile(Long hostId, Long houseId);
+    List<HouseSearchResponse> retrieveHouseSearch(String searchWord);
 }

@@ -8,6 +8,7 @@ import com.nanum.houseservice.house.domain.HouseFile;
 import com.nanum.houseservice.house.domain.HouseImg;
 import com.nanum.houseservice.house.domain.HouseOptionConn;
 import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseSearch;
 import com.nanum.houseservice.house.infrastructure.HouseFileRepository;
 import com.nanum.houseservice.house.infrastructure.HouseImgRepository;
 import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
@@ -314,6 +315,18 @@ public class HouseServiceImpl implements HouseService {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         return mapper.map(houseFile, HouseFileResponse.class);
+    }
+
+    @Override
+    public List<HouseSearchResponse> retrieveHouseSearch(String searchWord) {
+        List<HouseSearch> houses = houseRepository.findAllBySearchWord(searchWord);
+        List<HouseSearchResponse> houseSearchResponses = new ArrayList<>();
+
+        for (HouseSearch hs : houses) {
+            houseSearchResponses.add(hs.toSearchResponse());
+        }
+
+        return houseSearchResponses;
     }
 
 }

@@ -166,4 +166,12 @@ public class HouseController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
+    @Operation(summary = "하우스 검색 API", description = "하우스를 검색하는 요청")
+    @GetMapping("/houses/search/{searchWord}")
+    public ResponseEntity<Object> retrieveHouseSearch(@PathVariable String searchWord) {
+
+        List<HouseSearchResponse> response = houseService.retrieveHouseSearch(searchWord);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
 }
