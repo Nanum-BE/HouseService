@@ -8,6 +8,7 @@ import com.nanum.houseservice.house.domain.HouseFile;
 import com.nanum.houseservice.house.domain.HouseImg;
 import com.nanum.houseservice.house.domain.HouseOptionConn;
 import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseSearch;
 import com.nanum.houseservice.house.infrastructure.HouseFileRepository;
 import com.nanum.houseservice.house.infrastructure.HouseImgRepository;
 import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
@@ -16,6 +17,8 @@ import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
 import com.nanum.houseservice.option.vo.HouseOptionCheckResponse;
+import com.nanum.houseservice.wish.dto.WishIdDto;
+import com.nanum.houseservice.wish.infrastructure.WishRepository;
 import com.nanum.util.s3.S3UploadDto;
 import com.nanum.util.s3.S3UploaderService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +46,7 @@ public class HouseServiceImpl implements HouseService {
     private final HouseImgRepository houseImgRepository;
     private final HouseOptionRepository houseOptionRepository;
     private final HouseOptionConnRepository houseOptionConnRepository;
+    private final WishRepository wishRepository;
 
     @Override
     public void createHouse(HouseDto houseDto, MultipartFile houseMainImg,
@@ -76,12 +81,12 @@ public class HouseServiceImpl implements HouseService {
                 House finalHouse = house;
 
                 houseDto.getHouseOption().forEach(h -> {
-                    if(h.getIsChecked()) {
+                    if (h.getIsChecked()) {
                         HouseOption houseOption = houseOptionRepository.findById(h.getHouseOptionId()).orElse(null);
                         HouseOptionConn houseOptionConn = HouseOptionConn.builder()
-                            .house(finalHouse)
-                            .houseOption(houseOption)
-                            .build();
+                                .house(finalHouse)
+                                .houseOption(houseOption)
+                                .build();
                         houseOptionConnRepository.save(houseOptionConn);
                     }
                 });
@@ -177,14 +182,14 @@ public class HouseServiceImpl implements HouseService {
         List<HouseOptionCheckResponse> houseOption = new ArrayList<>();
 
         houseOptionList.forEach(h -> {
-            boolean isChecked = houseOptionIds.contains(h.getId());
-            houseOption.add(HouseOptionCheckResponse.builder()
-                        .houseOptionId(h.getId())
-                        .optionName(h.getOptionName())
-                        .isChecked(isChecked)
-                        .iconPath(h.getIconPath())
-                        .build());
-            }
+                    boolean isChecked = houseOptionIds.contains(h.getId());
+                    houseOption.add(HouseOptionCheckResponse.builder()
+                            .houseOptionId(h.getId())
+                            .optionName(h.getOptionName())
+                            .isChecked(isChecked)
+                            .iconPath(h.getIconPath())
+                            .build());
+                }
         );
 
         List<String> keyWord = new ArrayList<>(List.of(house.getKeyWord().split("#")));
@@ -245,7 +250,7 @@ public class HouseServiceImpl implements HouseService {
 
             if (houseDto.getHouseOption().size() > 0) {
                 houseDto.getHouseOption().forEach(h -> {
-                    if(h.getIsChecked()) {
+                    if (h.getIsChecked()) {
                         HouseOption houseOption = houseOptionRepository.findById(h.getHouseOptionId()).orElse(null);
                         HouseOptionConn houseOptionConn = HouseOptionConn.builder()
                                 .house(house)
@@ -314,6 +319,23 @@ public class HouseServiceImpl implements HouseService {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         return mapper.map(houseFile, HouseFileResponse.class);
+    }
+
+    @Override
+    public List<HouseSearchResponse> retrieveHouseSearch(String searchWord, Long userId) {
+        List<HouseSearch> houses = houseRepository.findAllBySearchWord(searchWord);
+        Long[] houseIdList = houses.stream().map(houseSearch -> houseSearch.getHouse().getId()).toArray(Long[]::new);
+        List<WishIdDto> wishIdDtoList = wishRepository.findWishId(userId, houseIdList);
+
+        List<HouseSearchResponse> houseSearchResponses = new ArrayList<>();
+
+        for (HouseSearch hs : houses) {
+            WishIdDto wishId = wishIdDtoList.stream()
+                    .filter(w -> w.getHouseId().equals(hs.getHouse().getId())).findFirst().orElse(null);
+            houseSearchResponses.add(hs.toSearchResponse(wishId != null ? wishId.getWishId() : null));
+        }
+
+        return houseSearchResponses;
     }
 
 }
