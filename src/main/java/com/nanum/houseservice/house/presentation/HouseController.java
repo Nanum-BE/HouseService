@@ -6,6 +6,7 @@ import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.vo.*;
+import com.nanum.util.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,8 +21,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -38,6 +42,7 @@ import java.util.List;
 public class HouseController {
 
     private final HouseService houseService;
+    private final JwtProvider jwtProvider;
 
     @Operation(summary = "하우스 등록 API", description = "호스트가 하우스를 등록하는 요청")
     @PostMapping("/houses")
@@ -170,7 +175,10 @@ public class HouseController {
     @GetMapping("/houses/search/{searchWord}")
     public ResponseEntity<Object> retrieveHouseSearch(@PathVariable String searchWord) {
 
-        List<HouseSearchResponse> response = houseService.retrieveHouseSearch(searchWord);
+        String token = jwtProvider.customResolveToken();
+        String userId = jwtProvider.getUserPk(token);
+
+        List<HouseSearchResponse> response = houseService.retrieveHouseSearch(searchWord, Long.valueOf(userId));
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }

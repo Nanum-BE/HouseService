@@ -5,14 +5,19 @@ import com.nanum.houseservice.house.vo.HouseSearchResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.stream.Stream;
+
 @Getter
 @AllArgsConstructor
 public class HouseSearch {
     private House house;
     private Integer maxMonthlyRent;
     private Integer minMonthlyRent;
+    private Long wishCount;
+    private Long reviewCount;
+    private Double reviewAvg;
 
-    public HouseSearchResponse toSearchResponse() {
+    public HouseSearchResponse toSearchResponse(Long wishId) {
         return HouseSearchResponse.builder()
                 .id(house.getId())
                 .houseName(house.getHouseName())
@@ -23,9 +28,10 @@ public class HouseSearch {
                 .lon(house.getLon())
                 .minMonthlyRent(minMonthlyRent)
                 .maxMonthlyRent(maxMonthlyRent)
-                .wishCount(null)
-                .reviewCount(null)
-                .reviewAvg(null)
+                .wishCount(wishCount)
+                .reviewCount(reviewCount)
+                .reviewAvg(reviewAvg != null ? Double.parseDouble(String.format("%.1f", reviewAvg)) : 0)
+                .wishId(wishId)
                 .build();
     }
 }

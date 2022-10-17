@@ -20,5 +20,5 @@ public interface HouseService {
     void updateHouseImg(Long hostId, Long houseId, List<Long> deleteHouseImgs, List<MultipartFile> houseImgs);
     void updateHouseFile(Long hostId, Long houseId, MultipartFile houseFile);
     HouseFileResponse retrieveHouseFile(Long hostId, Long houseId);
-    List<HouseSearchResponse> retrieveHouseSearch(String searchWord);
+    List<HouseSearchResponse> retrieveHouseSearch(String searchWord, Long userId);
 }
