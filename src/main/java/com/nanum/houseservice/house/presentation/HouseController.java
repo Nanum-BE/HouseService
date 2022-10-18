@@ -84,12 +84,11 @@ public class HouseController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
-    @Operation(summary = "본인 하우스 상세 조회 API", description = "호스트가 본인 하우스 상세 정보를 조회하는 요청")
-    @GetMapping("/houses/{hostId}/{houseId}")
-    public ResponseEntity<Object> retrieveHostHouse(@PathVariable("hostId") Long hostId,
-                                                    @PathVariable("houseId") Long houseId) {
+    @Operation(summary = "하우스 상세 조회 API", description = "하우스 상세 정보를 조회하는 요청")
+    @GetMapping("/houses/house/{houseId}")
+    public ResponseEntity<Object> retrieveHouseDetails(@PathVariable("houseId") Long houseId) {
 
-        HouseResponse response = houseService.retrieveHostHouse(hostId, houseId);
+        HouseResponse response = houseService.retrieveHouseDetails(houseId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }

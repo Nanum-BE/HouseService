@@ -137,7 +137,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public HouseResponse retrieveHostHouse(Long hostId, Long houseId) {
+    public HouseResponse retrieveHouseDetails(Long houseId) {
         House house = houseRepository.findById(houseId).get();
         List<HouseImg> houseImgs = houseImgRepository.findAllByHouseId(houseId);
         List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
@@ -146,17 +146,24 @@ public class HouseServiceImpl implements HouseService {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         HouseResponse houseResponse = mapper.map(house, HouseResponse.class);
-        List<HouseImgResponse> houseImgResponses = Arrays.asList(mapper.map(houseImgs, HouseImgResponse[].class));
-        List<HouseOptionConnResponse> houseOptionConnResponses = new ArrayList<>();
+        houseResponse.setHouseMainImg(house.getMainHouseImgPath());
+        houseResponse.setFloorPlanImg(house.getFloorPlanPath());
 
-        houseOptionConns.forEach(h -> houseOptionConnResponses.add(HouseOptionConnResponse.builder()
-                .id(h.getId())
+        List<String> keyWord = new ArrayList<>(List.of(house.getKeyWord().split("#")));
+        if (keyWord.size() > 1) keyWord.remove(0);
+        houseResponse.setKeyWord(keyWord);
+
+        List<HouseImgResponse> houseImgResponses = Arrays.asList(mapper.map(houseImgs, HouseImgResponse[].class));
+        List<HouseOptionCheckResponse> houseOptionConnResponses = new ArrayList<>();
+
+        houseOptionConns.forEach(h -> houseOptionConnResponses.add(HouseOptionCheckResponse.builder()
+                .houseOptionId(h.getHouseOption().getId())
                 .optionName(h.getHouseOption().getOptionName())
                 .iconPath(h.getHouseOption().getIconPath())
                 .build()));
 
         houseResponse.setHouseImgs(houseImgResponses);
-        houseResponse.setHouseOptionConn(houseOptionConnResponses);
+        houseResponse.setHouseOption(houseOptionConnResponses);
 
         return houseResponse;
     }
