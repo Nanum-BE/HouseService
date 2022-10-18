@@ -2,6 +2,7 @@ package com.nanum.houseservice.house.vo;
 
 import com.nanum.config.Gender;
 import com.nanum.config.HouseStatus;
+import com.nanum.houseservice.option.vo.HouseOptionCheckResponse;
 import com.nanum.houseservice.option.vo.HouseOptionResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -50,22 +51,22 @@ public class HouseResponse {
     @Schema(description = "하우스 성별")
     private Gender houseGender;
 
-    @Schema(description = "메인 이미지 경로")
-    private String mainHouseImgPath;
+    @Schema(description = "검색 키워드", defaultValue = "가야역")
+    private List<String> keyWord;
 
-    @Schema(description = "도면 이미지 경로")
-    private String floorPlanPath;
-
-    @Schema(description = "검색 키워드")
-    private String keyWord;
+    @Schema(description = "하우스 옵션")
+    private List<HouseOptionCheckResponse> houseOption;
 
     @Schema(description = "하우스 상태")
     private HouseStatus status;
 
-    @Schema(description = "하우스 이미지 반환 객체")
-    private List<HouseImgResponse> houseImgs;
+    @Schema(description = "하우스 메인 이미지 경로")
+    private String houseMainImg;
 
-    @Schema(description = "하우스 옵션 연결 반환 객체")
-    private List<HouseOptionConnResponse> houseOptionConn;
+    @Schema(description = "하우스 도면 이미지 경로")
+    private String floorPlanImg;
+
+    @Schema(description = "하우스 상세 이미지 객체")
+    private List<HouseImgResponse> houseImgs;
 
 }
