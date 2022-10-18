@@ -29,6 +29,11 @@ public class HouseSearchQueryRepository {
         CriteriaQuery query = createConditionCriteriaQuery(houseSearchDto);
 
         SearchHits<HouseDocument> search = operations.search(query, HouseDocument.class);
+
+        for(SearchHit searchHit : search) {
+            log.info(String.valueOf(searchHit.getScore()));
+        }
+
         return search.stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
@@ -38,7 +43,8 @@ public class HouseSearchQueryRepository {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
                 .should(QueryBuilders.matchQuery("houseName.jaso", searchWord))
-                .should(QueryBuilders.matchQuery("houseName.ngram", searchWord));
+                .should(QueryBuilders.matchQuery("houseName.ngram", searchWord))
+                .minimumShouldMatch(1);
 
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
         queryBuilder.withQuery(boolQueryBuilder);
@@ -68,7 +74,8 @@ public class HouseSearchQueryRepository {
 
         QueryBuilders.boolQuery()
                 .should(QueryBuilders.matchQuery("houseName.jaso", houseSearchDto.getHouseName()))
-                .should(QueryBuilders.matchQuery("houseName.jaso", houseSearchDto.getHouseName()));
+                .should(QueryBuilders.matchQuery("houseName.jaso", houseSearchDto.getHouseName()))
+                .minimumShouldMatch(1);
 
         if (StringUtils.hasText(houseSearchDto.getStreetAddress()))
             query.addCriteria(Criteria.where("houseName.ngram").matches(houseSearchDto.getStreetAddress()));
