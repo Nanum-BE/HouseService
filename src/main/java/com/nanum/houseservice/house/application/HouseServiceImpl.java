@@ -125,7 +125,7 @@ public class HouseServiceImpl implements HouseService {
         Page<House> houses = houseRepository.findAllByHostId(hostId, pageable);
 
         if (houses.isEmpty()) {
-            throw new NotFoundException(String.format("No Lookup Value"));
+            throw new NotFoundException("No Lookup Value");
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -312,7 +312,7 @@ public class HouseServiceImpl implements HouseService {
         HouseFile houseFile = houseFileRepository.findByHouseId(houseId);
 
         if (houseFile == null) {
-            throw new NotFoundException(String.format("No Lookup Value"));
+            throw new NotFoundException("No Lookup Value");
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -323,9 +323,11 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public List<HouseSearchResponse> retrieveHouseSearch(String searchWord, Long userId) {
-        List<HouseSearch> houses = houseRepository.findAllBySearchWord(searchWord);
+        List<HouseSearch> houses = searchWord != null ? houseRepository.findAllBySearchWord(searchWord) : houseRepository.findAllBySearch();
+
         Long[] houseIdList = houses.stream().map(houseSearch -> houseSearch.getHouse().getId()).toArray(Long[]::new);
-        List<WishIdDto> wishIdDtoList = wishRepository.findWishId(userId, houseIdList);
+
+        List<WishIdDto> wishIdDtoList = userId != null ? wishRepository.findWishId(userId, houseIdList) : new ArrayList<>();
 
         List<HouseSearchResponse> houseSearchResponses = new ArrayList<>();
 
