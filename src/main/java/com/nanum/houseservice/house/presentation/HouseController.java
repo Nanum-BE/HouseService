@@ -172,13 +172,13 @@ public class HouseController {
     }
 
     @Operation(summary = "하우스 검색 API", description = "하우스를 검색하는 요청")
-    @GetMapping("/houses/search/{searchWord}")
-    public ResponseEntity<Object> retrieveHouseSearch(@PathVariable String searchWord) {
+    @GetMapping("/houses/search")
+    public ResponseEntity<Object> retrieveHouseSearch(@RequestParam(defaultValue = "") String searchWord) {
 
         String token = jwtProvider.customResolveToken();
-        String userId = jwtProvider.getUserPk(token);
+        Long userId = token != null ? Long.valueOf(jwtProvider.getUserPk(token)) : null;
 
-        List<HouseSearchResponse> response = houseService.retrieveHouseSearch(searchWord, Long.valueOf(userId));
+        List<HouseSearchResponse> response = houseService.retrieveHouseSearch(searchWord, userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }

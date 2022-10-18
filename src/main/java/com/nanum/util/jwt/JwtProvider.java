@@ -29,7 +29,7 @@ public class JwtProvider {
     public String customResolveToken() {
         HttpServletRequest request = ((ServletRequestAttributes)
                 RequestContextHolder.currentRequestAttributes()).getRequest();
-        return request.getHeader("Authorization").replaceAll("Bearer ", "");
+        return request.getHeader("Authorization") != null ? request.getHeader("Authorization").replaceAll("Bearer ", "") : null;
     }
 
     public boolean validateToken(String jwtToken) {
