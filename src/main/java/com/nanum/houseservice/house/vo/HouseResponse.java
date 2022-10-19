@@ -51,6 +51,9 @@ public class HouseResponse {
     @Schema(description = "하우스 성별")
     private Gender houseGender;
 
+    @Schema(description = "하우스의 호스트 ID")
+    private Long hostId;
+
     @Schema(description = "검색 키워드", defaultValue = "가야역")
     private List<String> keyWord;
 
