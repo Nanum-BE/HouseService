@@ -1,2 +1,2 @@
 # HouseService
-CI 테스트2
+CI 테스트
