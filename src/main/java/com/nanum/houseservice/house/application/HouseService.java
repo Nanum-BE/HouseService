@@ -14,7 +14,7 @@ public interface HouseService {
                      List<MultipartFile> houseImgs);
 
     Page<HostHouseResponse> retrieveHostAllHouses(Long hostId, Pageable pageable);
-    HouseResponse retrieveHouseDetails(Long houseId);
+    HouseResponse retrieveHouseDetails(Long userId, Long houseId);
     HouseOriginResponse retrieveOriginHouse(Long hostId, Long houseId);
     void updateHouse(Long houseId, HouseDto houseDto, MultipartFile houseMainImg, MultipartFile floorPlanImg);
     void updateHouseImg(Long hostId, Long houseId, List<Long> deleteHouseImgs, List<MultipartFile> houseImgs);
