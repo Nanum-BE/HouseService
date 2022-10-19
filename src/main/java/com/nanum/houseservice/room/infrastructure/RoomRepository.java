@@ -18,10 +18,10 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Transactional
     @Modifying
     @Query(value = "update Room u set u.status = com.nanum.config.RoomStatus.PROGRESS where u.id = :roomId")
-    RoomStatus replaceStatusToProgress(Long roomId);
+    int replaceStatusToProgress(Long roomId);
 
     @Transactional
     @Modifying
     @Query(value = "update Room u set u.status = com.nanum.config.RoomStatus.COMPLETION where u.id = :roomId")
-    RoomStatus replaceStatusToCOMPLETION(Long roomId);
+    int replaceStatusToCOMPLETION(Long roomId);
 }
