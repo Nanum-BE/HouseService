@@ -88,7 +88,10 @@ public class HouseController {
     @GetMapping("/houses/house/{houseId}")
     public ResponseEntity<Object> retrieveHouseDetails(@PathVariable("houseId") Long houseId) {
 
-        HouseResponse response = houseService.retrieveHouseDetails(houseId);
+        String token = jwtProvider.customResolveToken();
+        Long userId = token != null ? Long.valueOf(jwtProvider.getUserPk(token)) : null;
+
+        HouseResponse response = houseService.retrieveHouseDetails(userId, houseId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }

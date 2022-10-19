@@ -17,6 +17,7 @@ import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
 import com.nanum.houseservice.option.vo.HouseOptionCheckResponse;
+import com.nanum.houseservice.wish.domain.Wish;
 import com.nanum.houseservice.wish.dto.WishIdDto;
 import com.nanum.houseservice.wish.infrastructure.WishRepository;
 import com.nanum.util.s3.S3UploadDto;
@@ -137,10 +138,12 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public HouseResponse retrieveHouseDetails(Long houseId) {
+    public HouseResponse retrieveHouseDetails(Long userId, Long houseId) {
         House house = houseRepository.findById(houseId).get();
         List<HouseImg> houseImgs = houseImgRepository.findAllByHouseId(houseId);
         List<HouseOptionConn> houseOptionConns = houseOptionConnRepository.findAllByHouseId(houseId);
+
+        Wish wish = userId != null ? wishRepository.findByUserIdAndHouse(userId, house) : null;
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -164,6 +167,7 @@ public class HouseServiceImpl implements HouseService {
 
         houseResponse.setHouseImgs(houseImgResponses);
         houseResponse.setHouseOption(houseOptionConnResponses);
+        houseResponse.setWishId(wish != null ? wish.getId() : null);
 
         return houseResponse;
     }

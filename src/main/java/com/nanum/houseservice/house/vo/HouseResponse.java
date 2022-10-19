@@ -69,4 +69,6 @@ public class HouseResponse {
     @Schema(description = "하우스 상세 이미지 객체")
     private List<HouseImgResponse> houseImgs;
 
+    @Schema(description = "좋아요 식별자")
+    private Long wishId;
 }
