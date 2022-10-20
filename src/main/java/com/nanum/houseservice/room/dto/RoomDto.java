@@ -7,6 +7,7 @@ import com.nanum.houseservice.room.domain.Room;
 import com.nanum.util.s3.S3UploadDto;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class RoomDto {
     private int monthlyRent;
     private int maintenanceFee;
     private int prepaidUtilityBill;
-    private LocalDateTime contractEndAt;
+    private LocalDate contractEndAt;
     private RoomStatus status;
     private String mainRoomImgPath;
     private List<Long> roomOption;

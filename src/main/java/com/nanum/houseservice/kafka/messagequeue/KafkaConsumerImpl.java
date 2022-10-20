@@ -25,7 +25,10 @@ public class KafkaConsumerImpl implements KafkaConsumer {
         if (kafkaRoomDto.getMessage().equals("contract")) {
             roomRepository.replaceStatusToProgress(kafkaRoomDto.getRoomId());
         } else if (kafkaRoomDto.getMessage().equals("completed")) {
+            log.info(kafkaRoomDto.getMessage());
+            log.info(String.valueOf(kafkaRoomDto.getRoomId()));
             roomRepository.replaceStatusToCOMPLETION(kafkaRoomDto.getRoomId());
+            log.info(String.valueOf(kafkaRoomDto.getEndDate()));
             roomRepository.replaceDate( kafkaRoomDto.getEndDate(), kafkaRoomDto.getRoomId());
         }
 

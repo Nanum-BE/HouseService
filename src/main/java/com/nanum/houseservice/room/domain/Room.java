@@ -13,6 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class Room extends BaseTimeEntity {
     private int prepaidUtilityBill;
 
     @Comment("계약 종료일")
-    private LocalDateTime contractEndAt;
+    private LocalDate contractEndAt;
 
     @Comment("방 상태 -> 대기 중, 진행 중, 입주 완료, 정비 중")
     @Enumerated(EnumType.STRING)
