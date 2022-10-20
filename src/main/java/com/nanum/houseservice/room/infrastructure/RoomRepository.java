@@ -27,5 +27,5 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Transactional
     @Modifying
     @Query(value = "update Room u set u.contractEndAt =:endDate where u.id = :roomId")
-    void replaceDate(Long roomId, LocalDate endDate);
+    void replaceDate(LocalDate endDate, Long roomId);
 }
