@@ -26,7 +26,7 @@ public class KafkaConsumerImpl implements KafkaConsumer {
             roomRepository.replaceStatusToProgress(kafkaRoomDto.getRoomId());
         } else if (kafkaRoomDto.getMessage().equals("completed")) {
             roomRepository.replaceStatusToCOMPLETION(kafkaRoomDto.getRoomId());
-            roomRepository.replaceDate(kafkaRoomDto.getRoomId(), kafkaRoomDto.getEndDate());
+            roomRepository.replaceDate( kafkaRoomDto.getEndDate(), kafkaRoomDto.getRoomId());
         }
 
     }
