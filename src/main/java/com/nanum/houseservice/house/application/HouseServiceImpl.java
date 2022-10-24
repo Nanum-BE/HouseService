@@ -50,7 +50,7 @@ public class HouseServiceImpl implements HouseService {
     private final WishRepository wishRepository;
 
     @Override
-    public void createHouse(HouseDto houseDto, MultipartFile houseMainImg,
+    public HouseCreateResponse createHouse(HouseDto houseDto, MultipartFile houseMainImg,
                             MultipartFile floorPlanImg, MultipartFile houseFile,
                             List<MultipartFile> houseImgs) {
         houseDto.setStatus(HouseStatus.BEFORE_APPROVAL);
@@ -118,6 +118,12 @@ public class HouseServiceImpl implements HouseService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        return HouseCreateResponse.builder()
+                .id(house.getId())
+                .houseName(house.getHouseName())
+                .mainHouseImgPath(house.getMainHouseImgPath())
+                .build();
     }
 
     @Override
