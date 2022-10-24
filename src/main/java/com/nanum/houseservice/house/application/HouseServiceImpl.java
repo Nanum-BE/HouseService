@@ -3,16 +3,10 @@ package com.nanum.houseservice.house.application;
 import com.nanum.config.HouseStatus;
 import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
-import com.nanum.houseservice.house.domain.House;
-import com.nanum.houseservice.house.domain.HouseFile;
-import com.nanum.houseservice.house.domain.HouseImg;
-import com.nanum.houseservice.house.domain.HouseOptionConn;
+import com.nanum.houseservice.house.domain.*;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.dto.HouseSearch;
-import com.nanum.houseservice.house.infrastructure.HouseFileRepository;
-import com.nanum.houseservice.house.infrastructure.HouseImgRepository;
-import com.nanum.houseservice.house.infrastructure.HouseOptionConnRepository;
-import com.nanum.houseservice.house.infrastructure.HouseRepository;
+import com.nanum.houseservice.house.infrastructure.*;
 import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
@@ -47,6 +41,7 @@ public class HouseServiceImpl implements HouseService {
     private final HouseOptionRepository houseOptionRepository;
     private final HouseOptionConnRepository houseOptionConnRepository;
     private final WishRepository wishRepository;
+    private final HouseSearchRepository houseSearchRepository;
 
     @Override
     public void createHouse(HouseDto houseDto, MultipartFile houseMainImg,
@@ -71,6 +66,9 @@ public class HouseServiceImpl implements HouseService {
 
             house = houseDto.houseDtoToEntity(houseMainImgDto, floorPlanImgDto, null);
             house = houseRepository.save(house);
+
+            HouseDocument houseDocument = HouseDocument.from(house);
+            houseSearchRepository.save(houseDocument);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
