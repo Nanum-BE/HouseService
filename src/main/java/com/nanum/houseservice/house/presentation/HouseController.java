@@ -64,14 +64,12 @@ public class HouseController {
         houseDto.setKeyWord(String.valueOf(keyWord));
 
         if (houseFile == null || houseFile.isEmpty()) {
-            throw new NoHouseFileException(String.format("HouseFile Cannot Be Empty"));
+            throw new NoHouseFileException("HouseFile Cannot Be Empty");
         }
 
-        houseService.createHouse(houseDto, houseMainImg, floorPlanImg, houseFile, houseImgs);
-        String result = "하우스 등록 신청이 완료되었습니다.";
-        BaseResponse<String> response = new BaseResponse<>(result);
+        HouseCreateResponse response = houseService.createHouse(houseDto, houseMainImg, floorPlanImg, houseFile, houseImgs);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(response));
     }
 
     @Operation(summary = "본인 하우스 목록 조회 API", description = "호스트가 본인 하우스 목록을 조회하는 요청")
@@ -154,7 +152,7 @@ public class HouseController {
                                                   @RequestPart(required = false) MultipartFile houseFile) {
 
         if (houseFile == null || houseFile.isEmpty()) {
-            throw new NoHouseFileException(String.format("HouseFile Cannot Be Empty"));
+            throw new NoHouseFileException("HouseFile Cannot Be Empty");
         }
 
         houseService.updateHouseFile(hostId, houseId, houseFile);
