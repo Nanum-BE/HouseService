@@ -199,7 +199,7 @@ public class HouseController {
 
     @Operation(summary = "하우스 조건 검색 API", description = "하우스를 특정 조건을 기준으로 검색하는 요청")
     @GetMapping("/houses/search/map")
-    public ResponseEntity<Object> retrieveHouseByRegion(@RequestParam(name = "sk", defaultValue = "", required = false) String searchWord,
+    public ResponseEntity<Object> retrieveHouseByOption(@RequestParam(name = "sk", defaultValue = "", required = false) String searchWord,
                                                         @RequestParam(name = "ar", defaultValue = "", required = false) String area,
                                                         @RequestParam(name = "gt", defaultValue = "", required = false) String genderType,
                                                         @RequestParam(name = "ht", defaultValue = "", required = false) String houseType,
@@ -219,7 +219,25 @@ public class HouseController {
                 .southWestY(southWestY)
                 .build();
 
-        List<HouseElasticSearchResponse> response = houseService.retrieveHouseByRegion(houseSearchDto);
+        List<HouseElasticSearchResponse> response = houseService.retrieveHouseByOption(houseSearchDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "하우스 조건 검색 API", description = "하우스를 특정 조건을 기준으로 검색하는 요청")
+    @GetMapping("/houses/search/region")
+    public ResponseEntity<Object> retrieveHouseByRegion(@RequestParam(name = "region") String region) {
+
+        List<HouseElasticSearchResponse> response = houseService.retrieveHouseByRegion(region);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "지역별 하우스 개수 조회 API", description = "지역별 하우스 개수를 조회하는 요청")
+    @GetMapping("/houses/search/regions")
+    public ResponseEntity<Object> retrieveHouseCountByRegion() {
+
+        List<HouseCountResponse> response = houseService.retrieveHouseCountByRegion();
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }

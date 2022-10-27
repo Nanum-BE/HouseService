@@ -1,20 +1,24 @@
 package com.nanum.houseservice.house.infrastructure;
 
+import com.google.common.collect.Lists;
 import com.nanum.houseservice.house.domain.HouseDocument;
 import com.nanum.houseservice.house.dto.HouseSearchDto;
+import com.nanum.houseservice.house.vo.HouseCountResponse;
 import com.nanum.houseservice.house.vo.HouseElasticSearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,7 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 public class HouseSearchQueryRepository {
 
     private final ElasticsearchOperations operations;
+    private final HouseSearchRepository houseSearchRepository;
 
     public List<String> findBySearchWord(String searchWord) {
 
@@ -47,7 +52,7 @@ public class HouseSearchQueryRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<HouseElasticSearchResponse> findByByElastic(String searchWord) {
+    public List<HouseElasticSearchResponse> findByElastic(String searchWord) {
 
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
@@ -58,11 +63,8 @@ public class HouseSearchQueryRepository {
                             .minimumShouldMatch(1);
         }
 
-        FunctionScoreQueryBuilder functionScoreQueryBuilder =
-                QueryBuilders.functionScoreQuery(boolQueryBuilder);
-
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
-        queryBuilder.withQuery(functionScoreQueryBuilder);
+        queryBuilder.withQuery(boolQueryBuilder).withPageable(PageRequest.of(0, 10000));
 
         SearchHits<HouseDocument> articles = operations
                 .search(queryBuilder.build(), HouseDocument.class, IndexCoordinates.of("house"));
@@ -72,7 +74,7 @@ public class HouseSearchQueryRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<HouseElasticSearchResponse> findByByRegion(HouseSearchDto houseSearchDto) {
+    public List<HouseElasticSearchResponse> findByOption(HouseSearchDto houseSearchDto) {
 
         // 중심 좌표를 기준으로 지정한 Distance(m단위)에 포함되는 결과 조회 쿼리
         GeoDistanceQueryBuilder distanceQueryBuilder = QueryBuilders
@@ -97,12 +99,70 @@ public class HouseSearchQueryRepository {
         }
 
         NativeSearchQueryBuilder searchQuery = new NativeSearchQueryBuilder();
-        searchQuery.withQuery(distanceQueryBuilder).withFilter(boolQueryBuilder);
+        searchQuery.withQuery(distanceQueryBuilder).withFilter(boolQueryBuilder).withPageable(PageRequest.of(0, 10000));
 
         SearchHits<HouseDocument> articles = operations.search(searchQuery.build(), HouseDocument.class, IndexCoordinates.of("house"));
 
         return articles.stream()
                 .map(HouseElasticSearchResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    public List<HouseElasticSearchResponse> findByRegion(String region) {
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+
+        if(region.equals("전국")) {
+            List<HouseDocument> houseDocuments = Lists.newArrayList(houseSearchRepository.findAll());
+
+            return houseDocuments.stream()
+                    .map(HouseElasticSearchResponse::fromDoc)
+                    .collect(Collectors.toList());
+        }
+
+        if(!region.equals("")) {
+            boolQueryBuilder.must(QueryBuilders.wildcardQuery("streetAddress", "*" + region + "*"))
+                    .must(QueryBuilders.wildcardQuery("lotAddress", "*" + region + "*"));
+        }
+
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+        queryBuilder.withQuery(boolQueryBuilder).withPageable(PageRequest.of(0, 10000));
+
+        SearchHits<HouseDocument> articles = operations
+                .search(queryBuilder.build(), HouseDocument.class, IndexCoordinates.of("house"));
+
+        return articles.stream()
+                .map(HouseElasticSearchResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<HouseCountResponse> countByRegion() {
+        List<HouseCountResponse> houseCountResponses = new ArrayList<>();
+
+        List<String> region = Arrays.asList("전국", "서울", "경기", "인천", "부산", "대구", "대전", "경남", "전남",
+                "충남", "광주", "울산", "경북", "전북", "충북", "강원", "제주", "세종");
+
+        for (String s : region) {
+            Long houseCount;
+
+            if(s.equals("전국")) {
+                houseCount = houseSearchRepository.countAllBy();
+            } else {
+                BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+                NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+
+                boolQueryBuilder.must(QueryBuilders.wildcardQuery("streetAddress", "*" + s + "*"))
+                        .must(QueryBuilders.wildcardQuery("lotAddress", "*" + s + "*"));
+                queryBuilder.withQuery(boolQueryBuilder);
+
+                houseCount = operations.count(queryBuilder.build(), HouseDocument.class, IndexCoordinates.of("house"));
+            }
+
+            houseCountResponses.add(HouseCountResponse.builder()
+                            .region(s)
+                            .houseCount(houseCount)
+                            .build());
+        }
+
+        return houseCountResponses;
     }
 }
