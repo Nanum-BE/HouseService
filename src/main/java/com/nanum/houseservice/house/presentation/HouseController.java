@@ -55,7 +55,7 @@ public class HouseController {
         HouseDto houseDto = mapper.map(houseRequest, HouseDto.class);
         StringBuilder keyWord = new StringBuilder();
 
-        for(String s : houseRequest.getKeyWord()) {
+        for (String s : houseRequest.getKeyWord()) {
             keyWord.append("#").append(s);
         }
 
@@ -95,7 +95,7 @@ public class HouseController {
     @Operation(summary = "기존 하우스 정보 조회 API", description = "호스트가 하우스 수정을 위해 기존 정보를 조회하는 요청")
     @GetMapping("/houses/{hostId}/origin/{houseId}")
     public ResponseEntity<Object> retrieveOriginHouse(@PathVariable("hostId") Long hostId,
-                                                    @PathVariable("houseId") Long houseId) {
+                                                      @PathVariable("houseId") Long houseId) {
 
         HouseOriginResponse response = houseService.retrieveOriginHouse(hostId, houseId);
 
@@ -118,7 +118,7 @@ public class HouseController {
 
         StringBuilder keyWord = new StringBuilder();
 
-        for(String s : houseRequest.getKeyWord()) {
+        for (String s : houseRequest.getKeyWord()) {
             keyWord.append("#").append(s);
         }
 
@@ -189,7 +189,7 @@ public class HouseController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
 
-    @Operation(summary = "하우스 검색 API", description = "하우스를 검색어로 검색하는 요청")
+    @Operation(summary = "하우스 검색 API(feat.elastic)", description = "하우스를 검색어로 검색하는 요청")
     @GetMapping("/houses/search/elastic")
     public ResponseEntity<Object> retrieveHouseByElastic(@RequestParam(defaultValue = "", required = false) String searchWord) {
         List<HouseElasticSearchResponse> response = houseService.retrieveHouseByElastic(searchWord);
@@ -238,6 +238,17 @@ public class HouseController {
     public ResponseEntity<Object> retrieveHouseCountByRegion() {
 
         List<HouseCountResponse> response = houseService.retrieveHouseCountByRegion();
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "하우스 통계 정보 조회 API", description = "하우스 방 가격, 리뷰 통계, 좋아요 통계, 좋아요 여부를 조회하는 요청")
+    @GetMapping("/houses/house/{houseId}/total")
+    public ResponseEntity<Object> retrieveHouseTotal(@PathVariable Long houseId) {
+        String token = jwtProvider.customResolveToken();
+        Long userId = token != null ? Long.valueOf(jwtProvider.getUserPk(token)) : null;
+
+        HouseTotalResponse response = houseService.retrieveHouseTotal(houseId, userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
