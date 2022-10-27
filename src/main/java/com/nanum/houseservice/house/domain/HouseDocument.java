@@ -42,8 +42,8 @@ public class HouseDocument {
             analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String lotAddress;
 
-    @Field
-    private GeoPoint loc;
+    @GeoPointField
+    private GeoPoint location;
 
     @Field(type = FieldType.Text, store = true,
             analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
@@ -66,9 +66,11 @@ public class HouseDocument {
         return HouseDocument.builder()
                 .id(house.getId())
                 .streetAddress(house.getStreetAddress())
+                .lotAddress(house.getLotAddress())
                 .houseName(house.getHouseName())
+                .keyWord(house.getKeyWord())
                 .houseType(house.getHouseType())
-                .loc(new GeoPoint(Double.parseDouble(house.getLat()), Double.parseDouble(house.getLon())))
+                .location(new GeoPoint(Double.parseDouble(house.getLat()), Double.parseDouble(house.getLon())))
                 .houseGender(house.getHouseGender())
                 .mainHouseImgPath(house.getMainHouseImgPath())
                 .status(house.getStatus())

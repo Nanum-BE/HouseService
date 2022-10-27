@@ -38,6 +38,9 @@
           "analyzer": "suggest_index_analyzer"
         }
       }
+    },
+    "location" : {
+      "type": "geo_point"
     }
   }
 }

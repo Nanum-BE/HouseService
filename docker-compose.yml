@@ -8,11 +8,12 @@ services:
       - node.name=elasticsearch
       - discovery.type=single-node
       - cluster.name=es-docker-cluster
-      - "ES_JAVA_OPTS=-Xms4096m -Xmx4096m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.security.enabled=false
       - http.port=9200
     ports:
       - "9200:9200"
+      - "9300:9300"
     ulimits:
       memlock:
         soft: -1

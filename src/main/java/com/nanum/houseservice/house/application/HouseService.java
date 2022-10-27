@@ -1,6 +1,7 @@
 package com.nanum.houseservice.house.application;
 
 import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseSearchDto;
 import com.nanum.houseservice.house.vo.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,4 +22,8 @@ public interface HouseService {
     void updateHouseFile(Long hostId, Long houseId, MultipartFile houseFile);
     HouseFileResponse retrieveHouseFile(Long hostId, Long houseId);
     List<HouseSearchResponse> retrieveHouseSearch(String searchWord, Long userId);
+    List<String> retrieveAutoHouseSearch(String searchWord);
+    List<HouseElasticSearchResponse> retrieveHouseByElastic(String searchWord);
+    List<HouseElasticSearchResponse> retrieveHouseByRegion(HouseSearchDto houseSearchDto);
+    void createHouseDocument();
 }

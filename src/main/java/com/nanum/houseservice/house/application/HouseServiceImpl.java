@@ -6,6 +6,7 @@ import com.nanum.exception.NotFoundException;
 import com.nanum.houseservice.house.domain.*;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.dto.HouseSearch;
+import com.nanum.houseservice.house.dto.HouseSearchDto;
 import com.nanum.houseservice.house.infrastructure.*;
 import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
@@ -27,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class HouseServiceImpl implements HouseService {
     private final HouseOptionConnRepository houseOptionConnRepository;
     private final WishRepository wishRepository;
     private final HouseSearchRepository houseSearchRepository;
+    private final HouseSearchQueryRepository houseSearchQueryRepository;
 
     @Override
     public void createHouse(HouseDto houseDto, MultipartFile houseMainImg,
@@ -334,6 +336,56 @@ public class HouseServiceImpl implements HouseService {
         }
 
         return houseSearchResponses;
+    }
+
+    @Override
+    public List<String> retrieveAutoHouseSearch(String searchWord) {
+        return houseSearchQueryRepository.findBySearchWord(searchWord);
+    }
+
+    @Override
+    public List<HouseElasticSearchResponse> retrieveHouseByElastic(String searchWord) {
+        return houseSearchQueryRepository.findByByElastic(searchWord);
+    }
+
+    @Override
+    public List<HouseElasticSearchResponse> retrieveHouseByRegion(HouseSearchDto houseSearchDto) {
+
+        Double distance = distance(houseSearchDto.getCenterX(), houseSearchDto.getCenterY(),
+                houseSearchDto.getSouthWestX(), houseSearchDto.getSouthWestY());
+
+        houseSearchDto.setDistance(distance);
+        return houseSearchQueryRepository.findByByRegion(houseSearchDto);
+    }
+
+    @Override
+    public void createHouseDocument() {
+        List<House> houses = houseRepository.findAll();
+
+        List<HouseDocument> houseDocuments = houses.stream()
+                .map(HouseDocument::from)
+                .collect(Collectors.toList());
+
+        houseSearchRepository.saveAll(houseDocuments);
+    }
+
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515 * 1609.344;
+
+        return dist;
+    }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
     }
 
 }
