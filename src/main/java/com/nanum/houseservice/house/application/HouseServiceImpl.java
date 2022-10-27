@@ -388,6 +388,19 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public HouseTotalResponse retrieveHouseTotal(Long houseId, Long userId) {
+        if (!houseRepository.existsById(houseId)) {
+            throw new NotFoundException("잘못된 하우스 정보입니다.");
+        }
+
+        HouseSearch houseSearch = houseRepository.findTotal(houseId);
+
+        Wish wish = userId != null ? wishRepository.findByUserIdAndHouse(userId, houseSearch.getHouse()) : null;
+
+        return houseSearch.from(wish != null ? wish.getId() : null);
+    }
+
+    @Override
     public void createHouseDocument() {
         List<House> houses = houseRepository.findAll();
 
