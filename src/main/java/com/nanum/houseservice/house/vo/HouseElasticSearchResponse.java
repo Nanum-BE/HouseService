@@ -47,4 +47,17 @@ public class HouseElasticSearchResponse {
                 .lon(String.valueOf(searchHit.getContent().getLocation().getLon()))
                 .build();
     }
+
+    public static HouseElasticSearchResponse fromDoc(HouseDocument houseDocument) {
+        return HouseElasticSearchResponse.builder()
+                .id(houseDocument.getId())
+                .houseName(houseDocument.getHouseName())
+                .mainHouseImgPath(houseDocument.getMainHouseImgPath())
+                .houseGender(houseDocument.getHouseGender())
+                .streetAddress(houseDocument.getStreetAddress())
+                .lotAddress(houseDocument.getLotAddress())
+                .lat(String.valueOf(houseDocument.getLocation().getLat()))
+                .lon(String.valueOf(houseDocument.getLocation().getLon()))
+                .build();
+    }
 }
