@@ -1,0 +1,46 @@
+{
+  "properties" : {
+    "streetAddress" : {
+      "type": "text",
+      "fields": {
+        "ngram": {
+          "type": "text",
+          "analyzer": "my_ngram_analyzer"
+        },
+        "jaso": {
+          "type": "text",
+          "analyzer": "suggest_index_analyzer"
+        }
+      }
+    },
+    "lotAddress" : {
+      "type": "text",
+      "fields": {
+        "ngram": {
+          "type": "text",
+          "analyzer": "my_ngram_analyzer"
+        },
+        "jaso": {
+          "type": "text",
+          "analyzer": "suggest_index_analyzer"
+        }
+      }
+    },
+    "keyWord" : {
+      "type": "text",
+      "fields": {
+        "ngram": {
+          "type": "text",
+          "analyzer": "my_ngram_analyzer"
+        },
+        "jaso": {
+          "type": "text",
+          "analyzer": "suggest_index_analyzer"
+        }
+      }
+    },
+    "location" : {
+      "type": "geo_point"
+    }
+  }
+}

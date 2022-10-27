@@ -5,6 +5,7 @@ import com.nanum.exception.ExceptionResponse;
 import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
+import com.nanum.houseservice.house.dto.HouseSearchDto;
 import com.nanum.houseservice.house.vo.*;
 import com.nanum.util.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,11 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -181,5 +179,54 @@ public class HouseController {
         List<HouseSearchResponse> response = houseService.retrieveHouseSearch(searchWord, userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "자동완성 API", description = "하우스 검색어 추천 요청")
+    @GetMapping("/houses/search/auto")
+    public ResponseEntity<Object> retrieveAutoHouseSearch(@RequestParam(defaultValue = "") String searchWord) {
+        List<String> response = houseService.retrieveAutoHouseSearch(searchWord);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "하우스 검색 API", description = "하우스를 검색어로 검색하는 요청")
+    @GetMapping("/houses/search/elastic")
+    public ResponseEntity<Object> retrieveHouseByElastic(@RequestParam(defaultValue = "", required = false) String searchWord) {
+        List<HouseElasticSearchResponse> response = houseService.retrieveHouseByElastic(searchWord);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "하우스 조건 검색 API", description = "하우스를 특정 조건을 기준으로 검색하는 요청")
+    @GetMapping("/houses/search/map")
+    public ResponseEntity<Object> retrieveHouseByRegion(@RequestParam(name = "sk", defaultValue = "", required = false) String searchWord,
+                                                        @RequestParam(name = "ar", defaultValue = "", required = false) String area,
+                                                        @RequestParam(name = "gt", defaultValue = "", required = false) String genderType,
+                                                        @RequestParam(name = "ht", defaultValue = "", required = false) String houseType,
+                                                        @RequestParam(name = "cX") Double centerX,
+                                                        @RequestParam(name = "cY") Double centerY,
+                                                        @RequestParam(name = "swX") Double southWestX,
+                                                        @RequestParam(name = "swY") Double southWestY) {
+
+        HouseSearchDto houseSearchDto = HouseSearchDto.builder()
+                .searchWord(searchWord)
+                .area(area)
+                .genderType(genderType)
+                .houseType(houseType)
+                .centerX(centerX)
+                .centerY(centerY)
+                .southWestX(southWestX)
+                .southWestY(southWestY)
+                .build();
+
+        List<HouseElasticSearchResponse> response = houseService.retrieveHouseByRegion(houseSearchDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
+    }
+
+    @PostMapping("/houses/document")
+    public ResponseEntity<Object> createHouseDocument() {
+        houseService.createHouseDocument();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("하우스 문서 생성 성공"));
     }
 }
