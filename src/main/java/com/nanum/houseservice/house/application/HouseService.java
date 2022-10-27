@@ -27,5 +27,6 @@ public interface HouseService {
     List<HouseElasticSearchResponse> retrieveHouseByOption(HouseSearchDto houseSearchDto);
     List<HouseElasticSearchResponse> retrieveHouseByRegion(String region);
     List<HouseCountResponse> retrieveHouseCountByRegion();
+    HouseTotalResponse retrieveHouseTotal(Long houseId, Long userId);
     void createHouseDocument();
 }
