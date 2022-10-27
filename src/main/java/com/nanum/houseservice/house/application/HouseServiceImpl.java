@@ -364,17 +364,27 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public List<HouseElasticSearchResponse> retrieveHouseByElastic(String searchWord) {
-        return houseSearchQueryRepository.findByByElastic(searchWord);
+        return houseSearchQueryRepository.findByElastic(searchWord);
     }
 
     @Override
-    public List<HouseElasticSearchResponse> retrieveHouseByRegion(HouseSearchDto houseSearchDto) {
+    public List<HouseElasticSearchResponse> retrieveHouseByOption(HouseSearchDto houseSearchDto) {
 
         Double distance = distance(houseSearchDto.getCenterX(), houseSearchDto.getCenterY(),
                 houseSearchDto.getSouthWestX(), houseSearchDto.getSouthWestY());
 
         houseSearchDto.setDistance(distance);
-        return houseSearchQueryRepository.findByByRegion(houseSearchDto);
+        return houseSearchQueryRepository.findByOption(houseSearchDto);
+    }
+
+    @Override
+    public List<HouseElasticSearchResponse> retrieveHouseByRegion(String region) {
+        return houseSearchQueryRepository.findByRegion(region);
+    }
+
+    @Override
+    public List<HouseCountResponse> retrieveHouseCountByRegion() {
+        return houseSearchQueryRepository.countByRegion();
     }
 
     @Override

@@ -24,6 +24,8 @@ public interface HouseService {
     List<HouseSearchResponse> retrieveHouseSearch(String searchWord, Long userId);
     List<String> retrieveAutoHouseSearch(String searchWord);
     List<HouseElasticSearchResponse> retrieveHouseByElastic(String searchWord);
-    List<HouseElasticSearchResponse> retrieveHouseByRegion(HouseSearchDto houseSearchDto);
+    List<HouseElasticSearchResponse> retrieveHouseByOption(HouseSearchDto houseSearchDto);
+    List<HouseElasticSearchResponse> retrieveHouseByRegion(String region);
+    List<HouseCountResponse> retrieveHouseCountByRegion();
     void createHouseDocument();
 }
