@@ -18,7 +18,7 @@ public class ElasticSearchConfig extends AbstractElasticsearchConfig {
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/vnd.elasticsearch+json;compatible-with=7");
 
         ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-                .connectedTo("3.37.166.100:9200")
+                .connectedTo("3.35.80.242:9200")
                 .withDefaultHeaders(httpHeaders)
                 .build();
         return RestClients.create(clientConfiguration).rest();
