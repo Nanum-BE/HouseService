@@ -226,9 +226,9 @@ public class HouseController {
 
     @Operation(summary = "하우스 조건 검색 API", description = "하우스를 특정 조건을 기준으로 검색하는 요청")
     @GetMapping("/houses/search/region")
-    public ResponseEntity<Object> retrieveHouseByRegion(@RequestParam(name = "region") String region) {
+    public ResponseEntity<Object> retrieveHouseByRegion(@RequestParam(name = "searchWord") String searchWord) {
 
-        List<HouseElasticSearchResponse> response = houseService.retrieveHouseByRegion(region);
+        List<HouseElasticSearchResponse> response = houseService.retrieveHouseByRegion(searchWord);
 
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(response));
     }
