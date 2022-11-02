@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.List;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
     Page<Room> findAllByHouseId(Long houseId, Pageable pageable);
     boolean existsById(Long roomId);
+    List<Room> findByHouseId(Long houseId);
 
     @Transactional
     @Modifying
