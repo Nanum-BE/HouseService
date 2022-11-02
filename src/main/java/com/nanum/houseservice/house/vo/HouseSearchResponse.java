@@ -45,7 +45,7 @@ public class HouseSearchResponse {
     private Long reviewCount;
 
     @Schema(description = "리뷰 평점")
-    private Double reviewAvg;
+    private String reviewAvg;
 
     @Schema(description = "좋아요 식별자")
     private Long wishId;
