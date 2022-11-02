@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WishResponse {
-    @Schema(description = "좋아요 식별지")
+    @Schema(description = "좋아요 식별자")
     private Long wishId;
 
     @Schema(description = "하우스 식별자")
