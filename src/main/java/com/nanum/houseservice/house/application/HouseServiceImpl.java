@@ -395,6 +395,10 @@ public class HouseServiceImpl implements HouseService {
 
         HouseSearch houseSearch = houseRepository.findTotal(houseId);
 
+        if(houseSearch.getHouse() == null) {
+            houseSearch = new HouseSearch(houseRepository.findById(houseId).orElse(null));
+        }
+
         Wish wish = userId != null ? wishRepository.findByUserIdAndHouse(userId, houseSearch.getHouse()) : null;
 
         return houseSearch.from(wish != null ? wish.getId() : null);
