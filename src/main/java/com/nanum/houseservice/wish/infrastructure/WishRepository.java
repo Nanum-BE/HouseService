@@ -17,6 +17,6 @@ public interface WishRepository extends JpaRepository<Wish, Long> {
     Page<Wish> findAllByUserId(Long userId, Pageable pageable);
     Wish findByUserIdAndHouse(Long userId, House house);
 
-    @Query(value = "select new com.nanum.houseservice.wish.dto.WishIdDto(w.id, w.house.id) from Wish w where w.userId = :userId and w.house.id in :houseIdList")
+    @Query(value = "select new com.nanum.houseservice.wish.dto.WishIdDto(w.id, w.house.id) from Wish w where w.userId = :userId and w.house.id in :houseIdList and w.deleteAt is null")
     List<WishIdDto> findWishId(@Param("userId") Long userId, @Param("houseIdList") Long[] houseIdList);
 }
