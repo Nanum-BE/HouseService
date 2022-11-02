@@ -9,6 +9,7 @@ import com.nanum.houseservice.room.vo.RoomResponse;
 import com.nanum.houseservice.wish.domain.Wish;
 import com.nanum.houseservice.wish.dto.WishDto;
 import com.nanum.houseservice.wish.infrastructure.WishRepository;
+import com.nanum.houseservice.wish.vo.WishIdResponse;
 import com.nanum.houseservice.wish.vo.WishResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,7 +32,7 @@ public class WishServiceImpl implements WishService{
     private final HouseRepository houseRepository;
 
     @Override
-    public void createWish(WishDto wishDto) {
+    public WishIdResponse createWish(WishDto wishDto) {
         if (wishRepository.existsByUserIdAndHouseId(wishDto.getUserId(), wishDto.getHouseId())) {
             throw new OverlapException("이미 좋아요한 하우스입니다.");
         }
@@ -42,10 +43,13 @@ public class WishServiceImpl implements WishService{
             throw new NotFoundException("해당 하우스가 존재하지 않습니다.");
         }
 
-        wishRepository.save(Wish.builder()
+        Wish wish = wishRepository.save(Wish.builder()
                         .house(house)
                         .userId(wishDto.getUserId())
                         .build());
+
+        return new WishIdResponse(wish.getId());
+
     }
 
     @Override

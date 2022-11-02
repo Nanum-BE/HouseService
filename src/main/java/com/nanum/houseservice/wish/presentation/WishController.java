@@ -6,6 +6,7 @@ import com.nanum.exception.ExceptionResponse;
 import com.nanum.exception.OverlapException;
 import com.nanum.houseservice.wish.application.WishService;
 import com.nanum.houseservice.wish.dto.WishDto;
+import com.nanum.houseservice.wish.vo.WishIdResponse;
 import com.nanum.houseservice.wish.vo.WishRequest;
 import com.nanum.houseservice.wish.vo.WishResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,10 +51,9 @@ public class WishController {
         WishDto wishDto = mapper.map(wishRequest, WishDto.class);
         wishDto.setUserId(userId);
 
-        wishService.createWish(wishDto);
-        String result = "좋아요 추가가 완료되었습니다.";
+        WishIdResponse wishIdResponse = wishService.createWish(wishDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(result));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(wishIdResponse));
     }
 
     @Operation(summary = "좋아요 취소 API", description = "사용자가 하우스 좋아요를 취소하는 요청")
