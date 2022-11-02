@@ -12,6 +12,8 @@ import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
 import com.nanum.houseservice.option.infrastructure.HouseOptionRepository;
 import com.nanum.houseservice.option.vo.HouseOptionCheckResponse;
+import com.nanum.houseservice.room.domain.Room;
+import com.nanum.houseservice.room.infrastructure.RoomRepository;
 import com.nanum.houseservice.wish.domain.Wish;
 import com.nanum.houseservice.wish.dto.WishIdDto;
 import com.nanum.houseservice.wish.infrastructure.WishRepository;
@@ -45,6 +47,7 @@ public class HouseServiceImpl implements HouseService {
     private final WishRepository wishRepository;
     private final HouseSearchRepository houseSearchRepository;
     private final HouseSearchQueryRepository houseSearchQueryRepository;
+    private final RoomRepository roomRepository;
 
     @Override
     public HouseCreateResponse createHouse(HouseDto houseDto, MultipartFile houseMainImg,
@@ -394,6 +397,13 @@ public class HouseServiceImpl implements HouseService {
         }
 
         HouseSearch houseSearch = houseRepository.findTotal(houseId);
+
+        if(houseSearch.getHouse() == null) {
+            List<Room> rooms = roomRepository.findByHouseId(houseId);
+            houseSearch = new HouseSearch(houseRepository.findById(houseId).orElse(null),
+                    rooms.stream().mapToInt(Room::getMonthlyRent).max().orElse(0),
+                    rooms.stream().mapToInt(Room::getMonthlyRent).min().orElse(0));
+        }
 
         Wish wish = userId != null ? wishRepository.findByUserIdAndHouse(userId, houseSearch.getHouse()) : null;
 

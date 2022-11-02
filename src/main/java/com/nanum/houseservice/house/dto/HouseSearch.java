@@ -18,6 +18,15 @@ public class HouseSearch {
     private Long reviewCount;
     private Double reviewAvg;
 
+    public HouseSearch(House house, Integer maxMonthlyRent, Integer minMonthlyRent) {
+        this.house = house;
+        this.maxMonthlyRent = maxMonthlyRent;
+        this.minMonthlyRent = minMonthlyRent;
+        this.wishCount = 0L;
+        this.reviewCount = 0L;
+        this.reviewAvg = 0D;
+    }
+
     public HouseSearchResponse toSearchResponse(Long wishId) {
         return HouseSearchResponse.builder()
                 .id(house.getId())
