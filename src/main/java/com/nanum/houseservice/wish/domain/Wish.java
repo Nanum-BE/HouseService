@@ -2,7 +2,9 @@ package com.nanum.houseservice.wish.domain;
 
 import com.nanum.config.BaseTimeEntity;
 import com.nanum.houseservice.house.domain.House;
+import com.nanum.houseservice.house.dto.HouseSearch;
 import com.nanum.houseservice.wish.dto.WishDto;
+import io.micrometer.core.instrument.search.Search;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +33,7 @@ public class Wish extends BaseTimeEntity {
     @Column(nullable = false)
     private Long userId;
 
-    public WishDto entityToWishDto() {
+    public WishDto entityToWishDto(HouseSearch houseTotal) {
         return WishDto.builder()
                 .wishId(id)
                 .houseId(house.getId())
@@ -39,6 +41,11 @@ public class Wish extends BaseTimeEntity {
                 .lotAddress(house.getLotAddress())
                 .mainHouseImgPath(house.getMainHouseImgPath())
                 .userId(userId)
+                .minMonthlyRent(houseTotal.getMinMonthlyRent() == null ? 0 : houseTotal.getMinMonthlyRent())
+                .maxMonthlyRent(houseTotal.getMaxMonthlyRent() == null ? 0 : houseTotal.getMaxMonthlyRent())
+                .wishCount(houseTotal.getWishCount())
+                .reviewCount(houseTotal.getReviewCount())
+                .reviewAvg(houseTotal.getReviewAvg() == null ? 0 : houseTotal.getReviewAvg())
                 .build();
     }
 }

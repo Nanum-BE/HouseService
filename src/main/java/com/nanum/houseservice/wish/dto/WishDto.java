@@ -16,4 +16,9 @@ public class WishDto {
     private String houseName;
     private String mainHouseImgPath;
     private Long userId;
+    private Integer minMonthlyRent;
+    private Integer maxMonthlyRent;
+    private Long wishCount;
+    private Long reviewCount;
+    private Double reviewAvg;
 }
