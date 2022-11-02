@@ -40,7 +40,7 @@ public class HouseSearch {
                 .maxMonthlyRent(maxMonthlyRent)
                 .wishCount(wishCount)
                 .reviewCount(reviewCount)
-                .reviewAvg(reviewAvg != null ? Double.parseDouble(String.format("%.1f", reviewAvg)) : 0)
+                .reviewAvg(String.valueOf(reviewAvg != null ? Double.parseDouble(String.format("%.1f", reviewAvg)) : 0))
                 .wishId(wishId)
                 .build();
     }
@@ -52,7 +52,7 @@ public class HouseSearch {
                 .maxMonthlyRent(maxMonthlyRent != null ? maxMonthlyRent : 0)
                 .wishCount(wishCount)
                 .reviewCount(reviewCount)
-                .reviewAvg(reviewAvg != null ? Double.parseDouble(String.format("%.1f", reviewAvg)) : 0)
+                .reviewAvg(String.valueOf(reviewAvg != null ? Double.parseDouble(String.format("%.1f", reviewAvg)) : 0))
                 .wishId(wishId)
                 .build();
     }
