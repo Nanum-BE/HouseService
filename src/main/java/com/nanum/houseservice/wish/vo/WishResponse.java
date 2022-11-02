@@ -39,5 +39,5 @@ public class WishResponse {
     private Long reviewCount;
 
     @Schema(description = "리뷰 평점")
-    private Double reviewAvg;
+    private String reviewAvg;
 }
