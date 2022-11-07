@@ -13,6 +13,10 @@ import java.util.List;
 public interface HouseRepository extends JpaRepository<House, Long> {
     Page<House> findAllByHostId(Long hostId, Pageable pageable);
 
+    List<House> findTop10ByOrderByUpdateAtDesc();
+
+    List<House> findTop10ByHouseTypeOrderByUpdateAtDesc(String houseType);
+
     @Query(value = "select new com.nanum.houseservice.house.dto.HouseSearch(h, max(r.monthlyRent), min(r.monthlyRent), count(distinct w), count(distinct re.id), avg(re.score)) " +
             "from House h join Room r on h.id = r.house.id left outer join Review re on r.id = re.room.id left outer join Wish w on h.id = w.house.id " +
             "where h.streetAddress like %:keyword% or h.lotAddress like %:keyword% or h.keyWord like %:keyword% and w.deleteAt is null and re.deleteAt is null " +

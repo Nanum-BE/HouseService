@@ -6,6 +6,7 @@ import com.nanum.exception.NoHouseFileException;
 import com.nanum.houseservice.house.application.HouseService;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.dto.HouseSearchDto;
+import com.nanum.houseservice.house.dto.PopularHouseDto;
 import com.nanum.houseservice.house.vo.*;
 import com.nanum.util.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -257,5 +258,23 @@ public class HouseController {
     public ResponseEntity<Object> createHouseDocument() {
         houseService.createHouseDocument();
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("하우스 문서 생성 성공"));
+    }
+
+    @GetMapping("/houses/main/popular")
+    public ResponseEntity<Object> retrievePopularHouses() {
+        List<PopularHouseDto> houses = houseService.retrievePopularHouses();
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(houses));
+    }
+
+    @GetMapping("/houses/main/myroom")
+    public ResponseEntity<Object> retrieveMyHouses() {
+        List<PopularHouseDto> houses = houseService.retrieveMyHouses();
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(houses));
+    }
+
+    @GetMapping("/houses/main/sharelist")
+    public ResponseEntity<Object> retrieveShareList() {
+        List<PopularHouseDto> list = houseService.retrieveShareList();
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(list));
     }
 }
