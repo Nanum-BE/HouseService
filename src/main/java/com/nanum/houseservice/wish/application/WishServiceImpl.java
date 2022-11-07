@@ -9,6 +9,7 @@ import com.nanum.houseservice.room.vo.RoomResponse;
 import com.nanum.houseservice.wish.domain.Wish;
 import com.nanum.houseservice.wish.dto.WishDto;
 import com.nanum.houseservice.wish.infrastructure.WishRepository;
+import com.nanum.houseservice.wish.vo.WishCountResponse;
 import com.nanum.houseservice.wish.vo.WishIdResponse;
 import com.nanum.houseservice.wish.vo.WishResponse;
 import lombok.RequiredArgsConstructor;
@@ -75,5 +76,11 @@ public class WishServiceImpl implements WishService{
         return new PageImpl<>(wishes.stream()
                 .map(wish -> mapper.map(wish.entityToWishDto(houseTotal.stream().filter(total -> wish.getHouse().getId().equals(total.getHouse().getId())).findFirst().get()), WishResponse.class))
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public WishCountResponse retrieveWishCount(Long userId) {
+        Long wishCount = wishRepository.countAllByUserId(userId);
+        return new WishCountResponse(wishCount);
     }
 }
