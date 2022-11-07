@@ -1,4 +1,4 @@
-package com.nanum.config;
+package com.nanum.houseservice.house.infrastructure;
 
 import com.amazonaws.services.ec2.model.Route;
 import com.nanum.houseservice.house.dto.PopularHouseDto;

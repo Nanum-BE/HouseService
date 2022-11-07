@@ -1,4 +1,4 @@
-package com.nanum.config;
+package com.nanum.houseservice.house.infrastructure;
 
 import com.querydsl.core.types.Ops;
 import com.querydsl.jpa.JPQLTemplates;

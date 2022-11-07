@@ -1,6 +1,6 @@
 package com.nanum.houseservice.house.application;
 
-import com.nanum.config.HouseRepositoryCustom;
+import com.nanum.houseservice.house.infrastructure.HouseRepositoryCustom;
 import com.nanum.config.HouseStatus;
 import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
@@ -30,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
