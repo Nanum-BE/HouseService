@@ -6,9 +6,11 @@ import com.nanum.exception.ExceptionResponse;
 import com.nanum.exception.OverlapException;
 import com.nanum.houseservice.wish.application.WishService;
 import com.nanum.houseservice.wish.dto.WishDto;
+import com.nanum.houseservice.wish.vo.WishCountResponse;
 import com.nanum.houseservice.wish.vo.WishIdResponse;
 import com.nanum.houseservice.wish.vo.WishRequest;
 import com.nanum.houseservice.wish.vo.WishResponse;
+import com.nanum.util.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,6 +42,7 @@ import java.util.List;
 })
 public class WishController {
     private final WishService wishService;
+    private final JwtProvider jwtProvider;
 
     @Operation(summary = "좋아요 API", description = "사용자가 하우스 좋아요를 추가하는 요청")
     @PostMapping("/users/{userId}/wishes")
@@ -68,6 +71,22 @@ public class WishController {
     public ResponseEntity<Object> retrieveWish(@PathVariable Long userId,
                                                Pageable pageable) {
         Page<WishResponse> wishResponses = wishService.retrieveWish(userId, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(wishResponses));
+    }
+
+    @Operation(summary = "내 좋아요 개수 조회 API", description = "특정 사용자의 좋아요 개수를 조회하는 요청")
+    @GetMapping("/users/wishes")
+    public ResponseEntity<Object> retrieveWishCount() {
+        String token = jwtProvider.customResolveToken();
+        Long userId = token != null ? Long.valueOf(jwtProvider.getUserPk(token)) : null;
+        WishCountResponse wishResponses;
+
+        if(userId != null) {
+            wishResponses = wishService.retrieveWishCount(userId);
+        } else {
+            wishResponses = new WishCountResponse(0L);
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(wishResponses));
     }
 }
