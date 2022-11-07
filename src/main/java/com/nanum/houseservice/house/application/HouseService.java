@@ -2,6 +2,7 @@ package com.nanum.houseservice.house.application;
 
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.dto.HouseSearchDto;
+import com.nanum.houseservice.house.dto.PopularHouseDto;
 import com.nanum.houseservice.house.vo.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,4 +30,7 @@ public interface HouseService {
     List<HouseCountResponse> retrieveHouseCountByRegion();
     HouseTotalResponse retrieveHouseTotal(Long houseId, Long userId);
     void createHouseDocument();
+    List<PopularHouseDto> retrievePopularHouses();
+    List<PopularHouseDto> retrieveMyHouses();
+    List<PopularHouseDto> retrieveShareList();
 }

@@ -1,5 +1,6 @@
 package com.nanum.houseservice.house.application;
 
+import com.nanum.config.HouseRepositoryCustom;
 import com.nanum.config.HouseStatus;
 import com.nanum.exception.CustomRunTimeException;
 import com.nanum.exception.NotFoundException;
@@ -7,6 +8,7 @@ import com.nanum.houseservice.house.domain.*;
 import com.nanum.houseservice.house.dto.HouseDto;
 import com.nanum.houseservice.house.dto.HouseSearch;
 import com.nanum.houseservice.house.dto.HouseSearchDto;
+import com.nanum.houseservice.house.dto.PopularHouseDto;
 import com.nanum.houseservice.house.infrastructure.*;
 import com.nanum.houseservice.house.vo.*;
 import com.nanum.houseservice.option.domain.HouseOption;
@@ -28,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,11 +51,12 @@ public class HouseServiceImpl implements HouseService {
     private final HouseSearchRepository houseSearchRepository;
     private final HouseSearchQueryRepository houseSearchQueryRepository;
     private final RoomRepository roomRepository;
+    private final HouseRepositoryCustom houseRepositoryCustom;
 
     @Override
     public HouseCreateResponse createHouse(HouseDto houseDto, MultipartFile houseMainImg,
-                            MultipartFile floorPlanImg, MultipartFile houseFile,
-                            List<MultipartFile> houseImgs) {
+                                           MultipartFile floorPlanImg, MultipartFile houseFile,
+                                           List<MultipartFile> houseImgs) {
         houseDto.setStatus(HouseStatus.BEFORE_APPROVAL);
         House house;
 
@@ -398,7 +402,7 @@ public class HouseServiceImpl implements HouseService {
 
         HouseSearch houseSearch = houseRepository.findTotal(houseId);
 
-        if(houseSearch.getHouse() == null) {
+        if (houseSearch.getHouse() == null) {
             List<Room> rooms = roomRepository.findByHouseId(houseId);
             houseSearch = new HouseSearch(houseRepository.findById(houseId).orElse(null),
                     rooms.stream().mapToInt(Room::getMonthlyRent).max().orElse(0),
@@ -440,4 +444,25 @@ public class HouseServiceImpl implements HouseService {
         return (rad * 180 / Math.PI);
     }
 
+    @Override
+    public List<PopularHouseDto> retrievePopularHouses() {
+        List<House> mainHouses = houseRepository.findTop10ByOrderByUpdateAtDesc();
+        return mainHouses.stream()
+                .map(PopularHouseDto::of)
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<PopularHouseDto> retrieveMyHouses() {
+        List<House> list = houseRepository.findTop10ByHouseTypeOrderByUpdateAtDesc("원룸형");
+        return list.stream()
+                .map(PopularHouseDto::of)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PopularHouseDto> retrieveShareList() {
+        return houseRepositoryCustom.findByHouseInfo(10);
+    }
 }
