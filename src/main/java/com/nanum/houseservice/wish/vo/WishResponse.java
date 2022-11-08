@@ -1,5 +1,6 @@
 package com.nanum.houseservice.wish.vo;
 
+import com.nanum.config.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -22,6 +23,12 @@ public class WishResponse {
 
     @Schema(description = "메인 하우스 이미지 경로")
     private String mainHouseImgPath;
+
+    @Schema(description = "하우스 성별")
+    private Gender houseGender;
+
+    @Schema(description = "건물 형태")
+    private String houseType;
 
     @Schema(description = "사용자 식별자")
     private Long userId;
