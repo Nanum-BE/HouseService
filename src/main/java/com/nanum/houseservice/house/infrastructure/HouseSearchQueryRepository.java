@@ -57,10 +57,11 @@ public class HouseSearchQueryRepository {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
         if(!searchWord.equals("")) {
-            boolQueryBuilder.should(QueryBuilders.wildcardQuery("lotAddress", "*" + searchWord + "*"))
-                            .should(QueryBuilders.wildcardQuery("streetAddress", "*" + searchWord + "*"))
-                            .should(QueryBuilders.wildcardQuery("keyWord", "*" + searchWord + "*"))
-                            .minimumShouldMatch(1);
+            boolQueryBuilder = boolQuery()
+                    .should(QueryBuilders.matchQuery("lotAddress.jaso", searchWord))
+                    .should(QueryBuilders.matchQuery("streetAddress.jaso", searchWord))
+                    .should(QueryBuilders.wildcardQuery("keyWord", "*" + searchWord + "*"))
+                    .minimumShouldMatch(1);
         }
 
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
@@ -86,10 +87,10 @@ public class HouseSearchQueryRepository {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
         if(!houseSearchDto.getSearchWord().equals("")) {
-            boolQueryBuilder.should(QueryBuilders.wildcardQuery("lotAddress", "*" + houseSearchDto.getSearchWord() + "*"))
-                            .should(QueryBuilders.wildcardQuery("streetAddress", "*" + houseSearchDto.getSearchWord() + "*"))
-                            .should(QueryBuilders.wildcardQuery("keyWord", "*" + houseSearchDto.getSearchWord() + "*"))
-                            .minimumShouldMatch(1);
+            boolQueryBuilder.should(QueryBuilders.matchQuery("lotAddress.jaso", houseSearchDto.getSearchWord()))
+                    .should(QueryBuilders.matchQuery("streetAddress.jaso", houseSearchDto.getSearchWord()))
+                    .should(QueryBuilders.wildcardQuery("keyWord", "*" + houseSearchDto.getSearchWord() + "*"))
+                    .minimumShouldMatch(1);
         }
         if(!houseSearchDto.getGenderType().equals("")) {
             boolQueryBuilder.must(QueryBuilders.termQuery("houseGender.keyword", houseSearchDto.getGenderType()));
@@ -158,9 +159,9 @@ public class HouseSearchQueryRepository {
             }
 
             houseCountResponses.add(HouseCountResponse.builder()
-                            .region(s)
-                            .houseCount(houseCount)
-                            .build());
+                    .region(s)
+                    .houseCount(houseCount)
+                    .build());
         }
 
         return houseCountResponses;
