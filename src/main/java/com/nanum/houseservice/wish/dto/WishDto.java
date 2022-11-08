@@ -1,5 +1,6 @@
 package com.nanum.houseservice.wish.dto;
 
+import com.nanum.config.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,8 @@ public class WishDto {
     private String lotAddress;
     private String houseName;
     private String mainHouseImgPath;
+    private Gender houseGender;
+    private String houseType;
     private Long userId;
     private Integer minMonthlyRent;
     private Integer maxMonthlyRent;

@@ -40,6 +40,8 @@ public class Wish extends BaseTimeEntity {
                 .houseName(house.getHouseName())
                 .lotAddress(house.getLotAddress())
                 .mainHouseImgPath(house.getMainHouseImgPath())
+                .houseGender(house.getHouseGender())
+                .houseType(house.getHouseType())
                 .userId(userId)
                 .minMonthlyRent(houseTotal.getMinMonthlyRent() == null ? 0 : houseTotal.getMinMonthlyRent())
                 .maxMonthlyRent(houseTotal.getMaxMonthlyRent() == null ? 0 : houseTotal.getMaxMonthlyRent())
